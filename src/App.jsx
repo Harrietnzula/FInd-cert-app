@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { FavoritesProvider } from "./context/FavoritesContext";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import EventDetails from "./pages/EventDetails";
@@ -7,16 +8,18 @@ import "./App.css";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Navbar />
-      <main>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/event/:id" element={<EventDetails />} />
-          <Route path="/favorites" element={<Favorites />} />
-        </Routes>
-      </main>
-    </BrowserRouter>
+    <FavoritesProvider>
+      <BrowserRouter>
+        <Navbar />
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/event/:id" element={<EventDetails />} />
+            <Route path="/favorites" element={<Favorites />} />
+          </Routes>
+        </main>
+      </BrowserRouter>
+    </FavoritesProvider>
   );
 }
 
