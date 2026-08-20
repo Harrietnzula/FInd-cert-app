@@ -1,14 +1,19 @@
 import { Link } from "react-router-dom";
 import { useFavorites } from "../context/FavoritesContext";
+import "./EventCard.css";
 
 function EventCard({ event }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorited = isFavorite(event.id);
 
-  const dateFormatted = new Date(event.datetime_local).toLocaleDateString(
-    "en-US",
-    { weekday: "short", month: "short", day: "numeric", year: "numeric" }
-  );
+  const dateObj = new Date(event.datetime_local);
+  const dateFormatted = dateObj.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+
+  const category = event.type?.replace(/_/g, " ") || "event";
+  const image = event.performers?.[0]?.image;
 
   function handleFavoriteClick(e) {
     e.preventDefault();
@@ -18,18 +23,26 @@ function EventCard({ event }) {
 
   return (
     <Link to={`/event/${event.id}`} className="event-card">
-      <button
-        className={`favorite-btn ${favorited ? "favorited" : ""}`}
-        onClick={handleFavoriteClick}
-        aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
-      >
-        ♥
-      </button>
-      <h3>{event.title}</h3>
-      <p className="event-date">{dateFormatted}</p>
-      <p className="event-venue">
-        {event.venue?.name}, {event.venue?.city}
-      </p>
+      <div className="event-card-art">
+        {image ? (
+          <img src={image} alt="" loading="lazy" />
+        ) : (
+          <div className="event-card-art-fallback">♪</div>
+        )}
+        <button
+          className={`favorite-btn ${favorited ? "favorited" : ""}`}
+          onClick={handleFavoriteClick}
+          aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          ♥
+        </button>
+      </div>
+
+      <div className="event-card-body">
+        <p className="event-card-category">{category}</p>
+        <h3>{event.title}</h3>
+        <p className="event-card-meta">{dateFormatted} · {event.venue?.city}</p>
+      </div>
     </Link>
   );
 }

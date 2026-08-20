@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { fetchEventDetails } from "../api/seatgeek";
 import { useFavorites } from "../context/FavoritesContext";
+import "./EventDetails.css";
 
 function EventDetails() {
   const { id } = useParams();
@@ -38,33 +39,50 @@ function EventDetails() {
   );
 
   const favorited = isFavorite(event.id);
+  const image = event.performers?.[0]?.image;
+  const category = event.type?.replace(/_/g, " ") || "event";
 
   return (
     <div className="event-details">
       <Link to="/" className="back-link">← Back to search</Link>
 
-      <h1>{event.title}</h1>
-      <p className="event-date">{dateFormatted}</p>
-      <p className="event-venue">
-        {event.venue?.name} — {event.venue?.address}, {event.venue?.city}, {event.venue?.state}
-      </p>
+      <div className="event-details-layout">
+        <div className="event-details-art">
+          {image ? (
+            <img src={image} alt="" />
+          ) : (
+            <div className="event-details-art-fallback">♪</div>
+          )}
+        </div>
 
-      <button
-        className={`favorite-btn-large ${favorited ? "favorited" : ""}`}
-        onClick={() => toggleFavorite(event)}
-      >
-        {favorited ? "♥ Saved to Favorites" : "♡ Add to Favorites"}
-      </button>
+        <div className="event-details-info">
+          <p className="event-details-category">{category}</p>
+          <h1>{event.title}</h1>
+          <p className="event-details-date">{dateFormatted}</p>
+          <p className="event-details-venue">
+            {event.venue?.name} — {event.venue?.address}, {event.venue?.city}, {event.venue?.state}
+          </p>
 
-      {event.stats?.lowest_price && (
-        <p className="price-range">
-          Tickets from ${event.stats.lowest_price}
-        </p>
-      )}
+          <div className="event-details-actions">
+            <button
+              className={`favorite-btn-large ${favorited ? "favorited" : ""}`}
+              onClick={() => toggleFavorite(event)}
+            >
+              {favorited ? "♥ Saved to favorites" : "♡ Add to favorites"}
+            </button>
 
-      <a href={event.url} target="_blank" rel="noopener noreferrer" className="ticket-link">
-        View tickets on SeatGeek →
-      </a>
+            <a href={event.url} target="_blank" rel="noopener noreferrer" className="ticket-link">
+              View tickets on SeatGeek →
+            </a>
+          </div>
+
+          {event.stats?.lowest_price && (
+            <p className="price-range">
+              Tickets from <span>${event.stats.lowest_price}</span>
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

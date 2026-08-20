@@ -1,6 +1,7 @@
 import { useFavorites } from "../context/FavoritesContext";
 import EventCard from "../components/EventCard";
 import { Link } from "react-router-dom";
+import "./Favorites.css";
 
 function Favorites() {
   const { favorites } = useFavorites();
@@ -10,9 +11,13 @@ function Favorites() {
       <h1>Your Favorites</h1>
 
       {favorites.length === 0 ? (
-        <p className="status-message">
-          No favorites yet. <Link to="/">Search for events</Link> and tap the heart to save them here.
-        </p>
+        <div className="empty-favorites">
+          <p className="empty-favorites-icon">♡</p>
+          <p className="status-message">No favorites yet.</p>
+          <Link to="/" className="empty-favorites-link">
+            Search for events →
+          </Link>
+        </div>
       ) : (
         <div className="event-list">
           {favorites.map((event) => (

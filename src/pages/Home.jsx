@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { fetchEvents } from "../api/seatgeek";
 import EventCard from "../components/EventCard";
+import "./Home.css";
 
 function Home() {
   const [query, setQuery] = useState("");
@@ -26,11 +27,11 @@ function Home() {
     } finally {
       setLoading(false);
     }
-  }
-
-  return (
-    <div className="home">
-      <h1>Find your next gig</h1>
+  }return (
+  <div className="home">
+    <div className="hero">
+      <h1>Find your next <span>live</span> moment</h1>
+      <p>Search concerts, festivals, and shows happening near you or anywhere else.</p>
 
       <form onSubmit={handleSearch} className="search-form">
         <input
@@ -41,22 +42,23 @@ function Home() {
         />
         <button type="submit">Search</button>
       </form>
-
-      {loading && <p>Loading events...</p>}
-
-      {error && <p className="error">{error}</p>}
-
-      {!loading && !error && hasSearched && events.length === 0 && (
-        <p>No events found. Try a different search.</p>
-      )}
-
-      <div className="event-list">
-        {events.map((event) => (
-          <EventCard key={event.id} event={event} />
-        ))}
-      </div>
     </div>
-  );
+
+    {loading && <p className="status-message">Loading events...</p>}
+
+    {error && <p className="status-message error">{error}</p>}
+
+    {!loading && !error && hasSearched && events.length === 0 && (
+      <p className="status-message">No events found. Try a different search.</p>
+    )}
+
+    <div className="event-list">
+      {events.map((event) => (
+        <EventCard key={event.id} event={event} />
+      ))}
+    </div>
+  </div>
+);
 }
 
 export default Home;
