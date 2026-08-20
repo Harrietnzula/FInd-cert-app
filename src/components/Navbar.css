@@ -12,7 +12,7 @@
 }
 
 .navbar-logo {
-  font-family: "Madeqo", var(--font-sans);
+  font-family: "Bricolage Grotesque", var(--font-sans);
   font-style: italic;
   font-weight: 800;
   font-size: 26px;
@@ -20,7 +20,13 @@
   color: var(--text-primary);
   display: flex;
   align-items: center;
+  gap: 2px;
   transition: opacity 0.15s ease;
+}
+
+.navbar-logo-icon {
+  color: var(--accent);
+  flex-shrink: 0;
 }
 
 .navbar-logo span {
