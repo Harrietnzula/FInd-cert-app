@@ -128,4 +128,13 @@
   position: relative;
   z-index: 1;
   text-align: center;
+}.popular-section {
+  margin-top: 8px;
+}
+
+.popular-section h2 {
+  font-family: "Space Grotesk", var(--font-sans);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
 }
