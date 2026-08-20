@@ -23,4 +23,17 @@ export async function fetchEventDetails(eventId) {
   const data = await response.json();
   return data;
 }   
+/**
+ * Get a handful of popular upcoming events, for hero background images
+ */
+export async function fetchFeaturedEvents() {
+  const url = `${BASE_URL}/events?sort=score.desc&per_page=10&client_id=${CLIENT_ID}`;
+  const response = await fetch(url);
 
+  if (!response.ok) {
+    throw new Error(`Error fetching featured events: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.events;
+}
