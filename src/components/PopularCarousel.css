@@ -1,0 +1,29 @@
+.popular-carousel {
+  margin-top: 48px;
+}
+
+.popular-carousel h2 {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.popular-carousel-row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding-bottom: 12px;
+  scrollbar-width: none;
+}
+
+.popular-carousel-row::-webkit-scrollbar {
+  display: none;
+}
+
+.popular-carousel-item {
+  flex-shrink: 0;
+  width: 200px;
+  scroll-snap-align: start;
+}

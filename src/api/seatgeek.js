@@ -1,28 +1,23 @@
 const BASE_URL = 'https://api.seatgeek.com/2';
 const CLIENT_ID = import.meta.env.VITE_SEATGEEK_CLIENT_ID;
 
-// search for events by keyword (e.g., artist name, venue, etc.) and return the results
-
+// Search for events by keyword and return the results.
 export async function fetchEvents(query) {
-  const url = `${BASE_URL}/events?client_id=${CLIENT_ID}&q=${query}`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Error fetching events: ${response.statusText}`);
-  }
-    const data = await response.json();
-    return data.events;
-    }   
+  const params = new URLSearchParams({
+    q: query,
+    per_page: '20',
+    client_id: CLIENT_ID,
+  });
+  const response = await fetch(`${BASE_URL}/events?${params}`);
 
-    // get event details by event ID and return the result
-export async function fetchEventDetails(eventId) {
-  const url = `${BASE_URL}/events/${eventId}?client_id=${CLIENT_ID}`;
-  const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`Error fetching event details: ${response.statusText}`);
+    throw new Error(`Error searching events: ${response.statusText}`);
   }
+
   const data = await response.json();
-  return data;
-}   
+  return data.events;
+}
+
 /**
  * Get a handful of popular upcoming events, for hero background images
  */
@@ -36,4 +31,15 @@ export async function fetchFeaturedEvents() {
 
   const data = await response.json();
   return data.events;
+}
+
+    // get event details by event ID and return the result
+export async function fetchEventDetails(eventId) {
+  const url = `${BASE_URL}/events/${eventId}?client_id=${CLIENT_ID}`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Error fetching event details: ${response.statusText}`);
+  }
+  const data = await response.json();
+  return data;
 }

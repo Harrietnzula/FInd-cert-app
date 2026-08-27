@@ -1,0 +1,602 @@
+=== ./backend/app/auth/routes.py ===
+from flask import Blueprint, request, jsonify
+from flask_login import login_user, logout_user, login_required, current_user
+
+from ..extensions import db
+from ..models import User
+
+auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
+
+
+@auth_bp.route("/signup", methods=["POST"])
+def signup():
+    data = request.get_json() or {}
+    username = (data.get("username") or "").strip()
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+
+    if not username or not email or not password:
+        return jsonify({"error": "username, email, and password are required"}), 400
+
+    if len(password) < 6:
+        return jsonify({"error": "password must be at least 6 characters"}), 400
+
+    existing = User.query.filter(
+        (User.username == username) | (User.email == email)
+    ).first()
+    if existing:
+        return jsonify({"error": "username or email already in use"}), 409
+
+    user = User(username=username, email=email)
+    user.set_password(password)
+    db.session.add(user)
+    db.session.commit()
+
+    login_user(user)
+    return jsonify(user.to_dict()), 201
+
+
+@auth_bp.route("/login", methods=["POST"])
+def login():
+    data = request.get_json() or {}
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+
+    user = User.query.filter_by(email=email).first()
+    if not user or not user.check_password(password):
+        return jsonify({"error": "invalid email or password"}), 401
+
+    login_user(user)
+    return jsonify(user.to_dict()), 200
+
+
+@auth_bp.route("/logout", methods=["POST"])
+@login_required
+def logout():
+    logout_user()
+    return jsonify({"message": "logged out"}), 200
+
+
+@auth_bp.route("/me", methods=["GET"])
+def me():
+    if not current_user.is_authenticated:
+        return jsonify({"error": "not authenticated"}), 401
+    return jsonify(current_user.to_dict()), 200
+=== ./backend/app/auth/__init__.py ===
+=== ./backend/app/collections/routes.py ===
+from flask import Blueprint, request, jsonify
+from flask_login import login_required, current_user
+
+from ..extensions import db
+from ..models import Collection
+
+collections_bp = Blueprint("collections", __name__, url_prefix="/collections")
+
+
+def get_owned_collection_or_error(collection_id):
+    """Returns (collection, None) or (None, (response, status))."""
+    collection = Collection.query.get(collection_id)
+    if not collection:
+        return None, (jsonify({"error": "collection not found"}), 404)
+    if collection.user_id != current_user.id:
+        return None, (jsonify({"error": "forbidden"}), 403)
+    return collection, None
+
+
+@collections_bp.route("", methods=["GET"])
+@login_required
+def list_collections():
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 10, type=int)
+
+    pagination = Collection.query.filter_by(user_id=current_user.id).order_by(
+        Collection.created_at.desc()
+    ).paginate(page=page, per_page=per_page, error_out=False)
+
+    return jsonify({
+        "collections": [c.to_dict() for c in pagination.items],
+        "page": pagination.page,
+        "per_page": pagination.per_page,
+        "total": pagination.total,
+        "pages": pagination.pages,
+    }), 200
+
+
+@collections_bp.route("", methods=["POST"])
+@login_required
+def create_collection():
+    data = request.get_json() or {}
+    name = (data.get("name") or "").strip()
+    if not name:
+        return jsonify({"error": "name is required"}), 400
+
+    collection = Collection(
+        name=name,
+        description=data.get("description", ""),
+        user_id=current_user.id,
+    )
+    db.session.add(collection)
+    db.session.commit()
+    return jsonify(collection.to_dict()), 201
+
+
+@collections_bp.route("/<int:collection_id>", methods=["GET"])
+@login_required
+def get_collection(collection_id):
+    collection, error = get_owned_collection_or_error(collection_id)
+    if error:
+        return error
+    return jsonify(collection.to_dict(include_events=True)), 200
+
+
+@collections_bp.route("/<int:collection_id>", methods=["PATCH"])
+@login_required
+def update_collection(collection_id):
+    collection, error = get_owned_collection_or_error(collection_id)
+    if error:
+        return error
+
+    data = request.get_json() or {}
+    if "name" in data:
+        name = (data["name"] or "").strip()
+        if not name:
+            return jsonify({"error": "name cannot be empty"}), 400
+        collection.name = name
+    if "description" in data:
+        collection.description = data["description"]
+
+    db.session.commit()
+    return jsonify(collection.to_dict()), 200
+
+
+@collections_bp.route("/<int:collection_id>", methods=["DELETE"])
+@login_required
+def delete_collection(collection_id):
+    collection, error = get_owned_collection_or_error(collection_id)
+    if error:
+        return error
+
+    db.session.delete(collection)
+    db.session.commit()
+    return jsonify({"message": "collection deleted"}), 200
+=== ./backend/app/collections/__init__.py ===
+=== ./backend/app/config.py ===
+import os
+
+
+class Config:
+    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
+
+    # Render (and some other hosts) hand out "postgres://" URLs, but
+    # SQLAlchemy 1.4+ requires "postgresql://". Normalize it here.
+    database_url = os.environ.get("DATABASE_URL", "postgresql://localhost/findcert")
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URI = database_url
+
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Comma-separated list of allowed frontend origins, e.g.
+    # "http://localhost:3000,https://findcert.netlify.app"
+    CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:3000").split(",")
+
+    # Session cookie behavior. In local dev over http, keep these as-is.
+    # In production (frontend + backend on different domains, over https),
+    # set SESSION_COOKIE_SAMESITE=None and SESSION_COOKIE_SECURE=True.
+    SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "Lax")
+    SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE", "False") == "True"
+=== ./backend/app/extensions.py ===
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_login import LoginManager
+from flask_bcrypt import Bcrypt
+from flask_cors import CORS
+
+db = SQLAlchemy()
+migrate = Migrate()
+login_manager = LoginManager()
+bcrypt = Bcrypt()
+cors = CORS()
+=== ./backend/app/models.py ===
+from datetime import datetime
+
+from flask_login import UserMixin
+
+from .extensions import db, bcrypt, login_manager
+
+
+class User(db.Model, UserMixin):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    collections = db.relationship(
+        "Collection",
+        backref="owner",
+        cascade="all, delete-orphan",
+        lazy=True,
+    )
+
+    def set_password(self, password):
+        self.password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password_hash, password)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "created_at": self.created_at.isoformat(),
+        }
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+class Collection(db.Model):
+    __tablename__ = "collections"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(255))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    saved_events = db.relationship(
+        "SavedEvent",
+        backref="collection",
+        cascade="all, delete-orphan",
+        lazy=True,
+    )
+
+    def to_dict(self, include_events=False):
+        data = {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "user_id": self.user_id,
+            "created_at": self.created_at.isoformat(),
+            "event_count": len(self.saved_events),
+        }
+        if include_events:
+            data["saved_events"] = [e.to_dict() for e in self.saved_events]
+        return data
+
+
+class SavedEvent(db.Model):
+    __tablename__ = "saved_events"
+
+    id = db.Column(db.Integer, primary_key=True)
+    collection_id = db.Column(db.Integer, db.ForeignKey("collections.id"), nullable=False)
+
+    # Data copied from a SeatGeek search result at the time it was saved.
+    seatgeek_event_id = db.Column(db.String(50), nullable=False)
+    event_name = db.Column(db.String(200), nullable=False)
+    event_date = db.Column(db.String(50))
+    venue_name = db.Column(db.String(200))
+    venue_city = db.Column(db.String(100))
+    event_url = db.Column(db.String(500))
+    image_url = db.Column(db.String(500))
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "collection_id": self.collection_id,
+            "seatgeek_event_id": self.seatgeek_event_id,
+            "event_name": self.event_name,
+            "event_date": self.event_date,
+            "venue_name": self.venue_name,
+            "venue_city": self.venue_city,
+            "event_url": self.event_url,
+            "image_url": self.image_url,
+            "created_at": self.created_at.isoformat(),
+        }
+=== ./backend/app/saved_events/routes.py ===
+from flask import Blueprint, request, jsonify
+from flask_login import login_required, current_user
+
+from ..extensions import db
+from ..models import Collection, SavedEvent
+
+saved_events_bp = Blueprint("saved_events", __name__)
+
+
+def get_owned_collection_or_error(collection_id):
+    collection = Collection.query.get(collection_id)
+    if not collection:
+        return None, (jsonify({"error": "collection not found"}), 404)
+    if collection.user_id != current_user.id:
+        return None, (jsonify({"error": "forbidden"}), 403)
+    return collection, None
+
+
+def get_owned_event_or_error(event_id):
+    event = SavedEvent.query.get(event_id)
+    if not event:
+        return None, (jsonify({"error": "event not found"}), 404)
+    if event.collection.user_id != current_user.id:
+        return None, (jsonify({"error": "forbidden"}), 403)
+    return event, None
+
+
+@saved_events_bp.route("/collections/<int:collection_id>/events", methods=["GET"])
+@login_required
+def list_events(collection_id):
+    collection, error = get_owned_collection_or_error(collection_id)
+    if error:
+        return error
+
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 10, type=int)
+
+    pagination = SavedEvent.query.filter_by(collection_id=collection.id).order_by(
+        SavedEvent.created_at.desc()
+    ).paginate(page=page, per_page=per_page, error_out=False)
+
+    return jsonify({
+        "saved_events": [e.to_dict() for e in pagination.items],
+        "page": pagination.page,
+        "per_page": pagination.per_page,
+        "total": pagination.total,
+        "pages": pagination.pages,
+    }), 200
+
+
+@saved_events_bp.route("/collections/<int:collection_id>/events", methods=["POST"])
+@login_required
+def create_event(collection_id):
+    collection, error = get_owned_collection_or_error(collection_id)
+    if error:
+        return error
+
+    data = request.get_json() or {}
+    if not data.get("seatgeek_event_id") or not data.get("event_name"):
+        return jsonify({"error": "seatgeek_event_id and event_name are required"}), 400
+
+    event = SavedEvent(
+        collection_id=collection.id,
+        seatgeek_event_id=data["seatgeek_event_id"],
+        event_name=data["event_name"],
+        event_date=data.get("event_date"),
+        venue_name=data.get("venue_name"),
+        venue_city=data.get("venue_city"),
+        event_url=data.get("event_url"),
+        image_url=data.get("image_url"),
+    )
+    db.session.add(event)
+    db.session.commit()
+    return jsonify(event.to_dict()), 201
+
+
+@saved_events_bp.route("/events/<int:event_id>", methods=["PATCH"])
+@login_required
+def update_event(event_id):
+    event, error = get_owned_event_or_error(event_id)
+    if error:
+        return error
+
+    data = request.get_json() or {}
+    for field in (
+        "event_name", "event_date", "venue_name",
+        "venue_city", "event_url", "image_url",
+    ):
+        if field in data:
+            setattr(event, field, data[field])
+
+    db.session.commit()
+    return jsonify(event.to_dict()), 200
+
+
+@saved_events_bp.route("/events/<int:event_id>", methods=["DELETE"])
+@login_required
+def delete_event(event_id):
+    event, error = get_owned_event_or_error(event_id)
+    if error:
+        return error
+
+    db.session.delete(event)
+    db.session.commit()
+    return jsonify({"message": "event deleted"}), 200
+=== ./backend/app/saved_events/__init__.py ===
+=== ./backend/app/__init__.py ===
+from flask import Flask
+
+from .config import Config
+from .extensions import db, migrate, login_manager, bcrypt, cors
+
+
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+
+    db.init_app(app)
+    migrate.init_app(app, db)
+    login_manager.init_app(app)
+    bcrypt.init_app(app)
+    cors.init_app(
+        app,
+        supports_credentials=True,
+        origins=app.config.get("CORS_ORIGINS", "*"),
+    )
+
+    # Import models so Flask-Migrate can see them.
+    from . import models  # noqa: F401
+
+    from .auth.routes import auth_bp
+    from .collections.routes import collections_bp
+    from .saved_events.routes import saved_events_bp
+
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(collections_bp)
+    app.register_blueprint(saved_events_bp)
+
+    @app.route("/")
+    def index():
+        return {"message": "FindCert API is running"}
+
+    return app
+=== ./backend/run.py ===
+import os
+
+from app import create_app
+
+app = create_app()
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5555))
+    app.run(debug=True, port=port)
+=== ./node_modules/flatted/python/flatted.py ===
+# ISC License
+#
+# Copyright (c) 2018-2025, Andrea Giammarchi, @WebReflection
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+# REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+# AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+# LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+# OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+# PERFORMANCE OF THIS SOFTWARE.
+
+import json as _json
+
+class _Known:
+    def __init__(self):
+        self.key = []
+        self.value = []
+
+class _String:
+    def __init__(self, value):
+        self.value = value
+
+def _array_keys(value):
+    for i in range(len(value)):
+        yield i
+
+def _object_keys(value):
+    for key in value:
+        yield key
+
+def _is_array(value):
+    return isinstance(value, (list, tuple))
+
+def _is_object(value):
+    return isinstance(value, dict)
+
+def _is_string(value):
+    return isinstance(value, str)
+
+def _index(known, input, value):
+    input.append(value)
+    index = str(len(input) - 1)
+    known.key.append(value)
+    known.value.append(index)
+    return index
+
+def _relate(known, input, value):
+    if _is_string(value) or _is_array(value) or _is_object(value):
+        try:
+            return known.value[known.key.index(value)]
+        except:
+            return _index(known, input, value)
+
+    return value
+
+def _resolver(input, lazy, parsed):
+    def resolver(output):
+        keys = _array_keys(output) if _is_array(output) else _object_keys(output) if _is_object(output) else []
+        for key in keys:
+            value = output[key]
+            if isinstance(value, _String):
+                tmp = input[int(value.value)]
+                output[key] = tmp
+                if (_is_array(tmp) or _is_object(tmp)) and tmp not in parsed:
+                    parsed.append(tmp)
+                    lazy.append([output, key])
+
+        return output
+
+    return resolver
+
+def _transform(known, input, value):
+    if _is_array(value):
+        output = []
+        for val in value:
+            output.append(_relate(known, input, val))
+        return output
+
+    if _is_object(value):
+        obj = {}
+        for key in value:
+            obj[key] = _relate(known, input, value[key])
+        return obj
+
+    return value
+
+def _wrap(value):
+    if _is_string(value):
+        return _String(value)
+
+    if _is_array(value):
+        i = 0
+        for val in value:
+            value[i] = _wrap(val)
+            i += 1
+
+    elif _is_object(value):
+        for key in value:
+            value[key] = _wrap(value[key])
+
+    return value
+
+def parse(value, *args, **kwargs):
+    json = _json.loads(value, *args, **kwargs)
+    wrapped = []
+    for value in json:
+        wrapped.append(_wrap(value))
+
+    input = []
+    for value in wrapped:
+        if isinstance(value, _String):
+            input.append(value.value)
+        else:
+            input.append(value)
+
+    value = input[0]
+    lazy = []
+    revive = _resolver(input, lazy, [value])
+
+    value = revive(value)
+
+    i = 0
+    while i < len(lazy):
+        o, k = lazy[i]
+        i += 1
+        o[k] = revive(o[k])
+
+    return value
+
+
+def stringify(value, *args, **kwargs):
+    known = _Known()
+    input = []
+    output = []
+    i = int(_index(known, input, value))
+    while i < len(input):
+        output.append(_transform(known, input, input[i]))
+        i += 1
+    return _json.dumps(output, *args, **kwargs)

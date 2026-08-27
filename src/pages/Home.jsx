@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { fetchEvents, fetchFeaturedEvents } from "../api/seatgeek";
 import EventCard from "../components/EventCard";
+import SparkleField from "../components/SparkleField";
+import GenreScroll from "../components/GenreScroll";
+import PopularCarousel from "../components/PopularCarousel";
+import StoryBlock from "../components/StoryBlock";
+import Footer from "../components/Footer";
+import Toast from "../components/Toast";
 import "./Home.css";
 
 function Home() {
@@ -12,48 +18,39 @@ function Home() {
   const [heroImages, setHeroImages] = useState([]);
   const [heroIndex, setHeroIndex] = useState(0);
   const [popularEvents, setPopularEvents] = useState([]);
+  const [toastMessage, setToastMessage] = useState(null);
 
   useEffect(() => {
     async function loadFeatured() {
       try {
         const featured = await fetchFeaturedEvents();
-
         const images = featured
           .map((event) => event.performers?.[0]?.image)
           .filter(Boolean);
         setHeroImages(images);
-
-        setPopularEvents(featured.slice(0, 6));
+        setPopularEvents(featured.slice(0, 8));
       } catch (err) {
         console.error("Couldn't load featured events:", err);
       }
     }
-
     loadFeatured();
   }, []);
 
-  // Cycle to the next image every 5 seconds
   useEffect(() => {
     if (heroImages.length === 0) return;
-
     const interval = setInterval(() => {
       setHeroIndex((prev) => (prev + 1) % heroImages.length);
     }, 5000);
-
     return () => clearInterval(interval);
   }, [heroImages]);
 
-  async function handleSearch(e) {
-    e.preventDefault();
-
-    if (!query.trim()) return;
-
+  async function runSearch(term) {
+    if (!term.trim()) return;
     setLoading(true);
     setError(null);
     setHasSearched(true);
-
     try {
-      const results = await fetchEvents(query);
+      const results = await fetchEvents(term);
       setEvents(results);
     } catch (err) {
       setError("Something went wrong fetching events. Please try again.");
@@ -61,6 +58,21 @@ function Home() {
       setLoading(false);
     }
   }
+
+  function handleSearch(e) {
+    e.preventDefault();
+    runSearch(query);
+  }
+
+  function handleGenreClick(genre) {
+    setQuery(genre);
+    runSearch(genre);
+    setToastMessage(`Searching ${genre} events…`);
+  }
+
+  const storyImages = popularEvents
+    .map((event) => event.performers?.[0]?.image)
+    .filter(Boolean);
 
   return (
     <div className="home">
@@ -74,6 +86,7 @@ function Home() {
             />
           ))}
           <div className="hero-bg-overlay" />
+          <SparkleField count={40} />
         </div>
 
         <div className="hero-content">
@@ -92,30 +105,50 @@ function Home() {
         </div>
       </div>
 
+      {!hasSearched && <GenreScroll onSelectGenre={handleGenreClick} />}
+
       {loading && <p className="status-message">Loading events...</p>}
-
       {error && <p className="status-message error">{error}</p>}
-
       {!loading && !error && hasSearched && events.length === 0 && (
         <p className="status-message">No events found. Try a different search.</p>
       )}
 
-      {!hasSearched && popularEvents.length > 0 && (
-        <div className="popular-section">
-          <h2>Popular right now</h2>
-          <div className="event-list">
-            {popularEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
+      {hasSearched && events.length > 0 && (
+        <div className="event-list">
+          {events.map((event) => (
+            <EventCard key={event.id} event={event} />
+          ))}
         </div>
       )}
 
-      <div className="event-list">
-        {events.map((event) => (
-          <EventCard key={event.id} event={event} />
-        ))}
-      </div>
+      {!hasSearched && <PopularCarousel events={popularEvents} />}
+
+      {!hasSearched && (
+        <>
+          <StoryBlock
+            eyebrow="Discover"
+            title="Search by artist, venue, or genre"
+            description="Type in who you want to see, and get straight to real dates, venues, and ticket links — no clutter, no ads."
+            image={storyImages[0]}
+          />
+          <StoryBlock
+            eyebrow="Organize"
+            title="Save what catches your eye"
+            description="Tap the heart on anything you like. Build a running shortlist of shows you don't want to miss."
+            image={storyImages[1]}
+            reverse
+          />
+          <StoryBlock
+            eyebrow="Plan ahead"
+            title="Never lose track of a show again"
+            description="Come back anytime and pick up right where you left off — your favorites are always one tap away."
+            image={storyImages[2]}
+          />
+        </>
+      )}
+
+      <Footer />
+      <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
     </div>
   );
 }
