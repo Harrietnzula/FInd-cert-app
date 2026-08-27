@@ -1,21 +1,33 @@
-import RevealOnScroll from "./RevealOnScroll";
-import "./StoryBlock.css";
+import { useEffect, useRef, useState } from "react";
+import "./RevealOnScroll.css";
 
-function StoryBlock({ eyebrow, title, description, image, reverse = false }) {
+function RevealOnScroll({ children }) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <RevealOnScroll>
-      <div className={`story-block ${reverse ? "story-block-reverse" : ""}`}>
-        <div className="story-block-text">
-          <p className="story-block-eyebrow">{eyebrow}</p>
-          <h2>{title}</h2>
-          <p className="story-block-desc">{description}</p>
-        </div>
-        <div className="story-block-image">
-          {image && <img src={image} alt="" loading="lazy" />}
-        </div>
-      </div>
-    </RevealOnScroll>
+    <div ref={ref} className={`reveal-on-scroll ${visible ? "reveal-visible" : ""}`}>
+      {children}
+    </div>
   );
 }
 
-export default StoryBlock;
+export default RevealOnScroll;
