@@ -1,12 +1,5 @@
-{
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/"
-    }
-  ]
-}
+Is it this?
+CORS(app, origins=[
+    "https://book-app-rosy.vercel.app",
+    "http://localhost:5173"
+])
