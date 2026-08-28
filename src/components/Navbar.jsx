@@ -1,7 +1,16 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./Navbar.css";
 
 function Navbar() {
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    await logout();
+    navigate("/");
+  }
+
   return (
     <nav className="navbar">
       <Link to="/" className="navbar-logo">
@@ -36,6 +45,19 @@ function Navbar() {
       <div className="navbar-links">
         <Link to="/">Search</Link>
         <Link to="/favorites">Favorites</Link>
+        {isAuthenticated ? (
+          <>
+            <span className="navbar-username">{user.username}</span>
+            <button onClick={handleLogout} className="navbar-logout">
+              Log out
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/login">Log in</Link>
+            <Link to="/signup">Sign up</Link>
+          </>
+        )}
       </div>
     </nav>
   );

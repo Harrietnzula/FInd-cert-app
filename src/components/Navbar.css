@@ -39,6 +39,7 @@
 
 .navbar-links {
   display: flex;
+  align-items: center;
   gap: 28px;
 }
 
@@ -51,4 +52,21 @@
 
 .navbar-links a:hover {
   color: var(--text-primary);
+}
+
+.navbar-username {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.navbar-logout {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: color 0.15s ease;
+}
+
+.navbar-logout:hover {
+  color: var(--accent);
 }

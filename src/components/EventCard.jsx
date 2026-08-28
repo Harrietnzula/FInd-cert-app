@@ -1,11 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useFavorites } from "../context/FavoritesContext";
+import { useAuth } from "../context/AuthContext";
 import ConfettiBurst from "./ConfettiBurst";
 import "./EventCard.css";
 
 function EventCard({ event, variant = "default", index = 0 }) {
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const favorited = isFavorite(event.id);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [burstTrigger, setBurstTrigger] = useState(0);
@@ -18,13 +21,23 @@ function EventCard({ event, variant = "default", index = 0 }) {
   const category = event.type?.replace(/_/g, " ") || "event";
   const image = event.performers?.[0]?.image;
 
-  function handleFavoriteClick(e) {
+  async function handleFavoriteClick(e) {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
     const wasFavorited = favorited;
-    toggleFavorite(event);
-    if (!wasFavorited) {
-      setBurstTrigger((prev) => prev + 1);
+    try {
+      await toggleFavorite(event);
+      if (!wasFavorited) {
+        setBurstTrigger((prev) => prev + 1);
+      }
+    } catch (err) {
+      console.error("Failed to update favorite:", err);
     }
   }
 

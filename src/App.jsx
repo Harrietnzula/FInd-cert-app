@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { CollectionsProvider } from "./context/CollectionsContext";
 import Navbar from "./components/Navbar";
@@ -8,6 +9,8 @@ import PageTransition from "./components/PageTransition";
 import Home from "./pages/Home";
 import EventDetails from "./pages/EventDetails";
 import Favorites from "./pages/Favorites";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import "./App.css";
 
 function App() {
@@ -18,20 +21,24 @@ function App() {
   }
 
   return (
-    <FavoritesProvider>
-      <CollectionsProvider>
-        <BrowserRouter>
-          <Navbar />
-          <main>
-            <Routes>
-              <Route path="/" element={<PageTransition><Home /></PageTransition>} />
-              <Route path="/event/:id" element={<PageTransition><EventDetails /></PageTransition>} />
-              <Route path="/favorites" element={<PageTransition><Favorites /></PageTransition>} />
-            </Routes>
-          </main>
-        </BrowserRouter>
-      </CollectionsProvider>
-    </FavoritesProvider>
+    <AuthProvider>
+      <FavoritesProvider>
+        <CollectionsProvider>
+          <BrowserRouter>
+            <Navbar />
+            <main>
+              <Routes>
+                <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+                <Route path="/event/:id" element={<PageTransition><EventDetails /></PageTransition>} />
+                <Route path="/favorites" element={<PageTransition><Favorites /></PageTransition>} />
+                <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+                <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
+              </Routes>
+            </main>
+          </BrowserRouter>
+        </CollectionsProvider>
+      </FavoritesProvider>
+    </AuthProvider>
   );
 }
 

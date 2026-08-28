@@ -1,11 +1,16 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { useCollections } from "../context/CollectionsContext";
 import "./ListMenu.css";
 
 function ListMenu({ event }) {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const { collections, createCollection, addToCollection, isInCollection } = useCollections();
   const [open, setOpen] = useState(false);
   const [newListName, setNewListName] = useState("");
+  const [busy, setBusy] = useState(false);
   const menuRef = useRef(null);
 
   // Close the dropdown if the user clicks anywhere outside it
@@ -22,24 +27,42 @@ function ListMenu({ event }) {
   function toggleMenu(e) {
     e.preventDefault();
     e.stopPropagation();
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
     setOpen((prev) => !prev);
   }
 
-  function handleAddToList(e, collectionId) {
+  async function handleAddToList(e, collectionId) {
     e.preventDefault();
     e.stopPropagation();
-    addToCollection(collectionId, event);
-    setOpen(false);
+    setBusy(true);
+    try {
+      await addToCollection(collectionId, event);
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setBusy(false);
+    }
   }
 
-  function handleCreateList(e) {
+  async function handleCreateList(e) {
     e.preventDefault();
     e.stopPropagation();
     if (!newListName.trim()) return;
-    const id = createCollection(newListName.trim());
-    addToCollection(id, event);
-    setNewListName("");
-    setOpen(false);
+    setBusy(true);
+    try {
+      const id = await createCollection(newListName.trim());
+      await addToCollection(id, event);
+      setNewListName("");
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -74,8 +97,9 @@ function ListMenu({ event }) {
               onChange={(e) => setNewListName(e.target.value)}
               placeholder="New list name..."
               onClick={(e) => e.stopPropagation()}
+              disabled={busy}
             />
-            <button type="submit">Add</button>
+            <button type="submit" disabled={busy}>Add</button>
           </form>
         </div>
       )}
