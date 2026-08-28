@@ -1,9 +1,5 @@
 {
-  "redirects": [
-    {
-      "source": "/(.*)",
-      "destination": "https://f-ind-cert-app.vercel.app",
-      "permanent": true
-    }
-  ]
+    "rewrites": [
+      { "source": "/(.*)", "destination": "/index.html" }
+    ]
 }
