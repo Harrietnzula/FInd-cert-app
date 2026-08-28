@@ -2,11 +2,46 @@
   margin-top: 48px;
 }
 
-.popular-carousel h2 {
-  font-family: var(--font-sans);
+.popular-carousel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.popular-carousel-header h2 {
+  font-family: "Space Grotesk", var(--font-sans);
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 16px;
+}
+
+.popular-carousel-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.carousel-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+}
+
+.carousel-arrow:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  transform: scale(1.08);
+}
+
+.carousel-arrow:disabled {
+  opacity: 0.25;
+  cursor: default;
 }
 
 .popular-carousel-row {
@@ -14,8 +49,39 @@
   gap: 20px;
   overflow-x: auto;
   scroll-snap-type: x proximity;
-  padding-bottom: 12px;
+  padding: 4px 4px 12px;
+  margin: -4px -4px 0;
   scrollbar-width: none;
+
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 24px,
+    #000 calc(100% - 24px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 24px,
+    #000 calc(100% - 24px),
+    transparent 100%
+  );
+}
+
+.popular-carousel-row.at-start {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent 100%);
+  mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent 100%);
+}
+
+.popular-carousel-row.at-end {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24px);
+  mask-image: linear-gradient(to right, transparent 0, #000 24px);
+}
+
+.popular-carousel-row.at-start.at-end {
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 
 .popular-carousel-row::-webkit-scrollbar {
@@ -24,6 +90,6 @@
 
 .popular-carousel-item {
   flex-shrink: 0;
-  width: 200px;
+  width: 180px;
   scroll-snap-align: start;
 }
