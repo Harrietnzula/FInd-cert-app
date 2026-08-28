@@ -1,5 +1,5 @@
 Is it this?
 CORS(app, origins=[
-    "https://book-app-rosy.vercel.app",
+    "https://f-ind-cert-app.vercel.app/",
     "http://localhost:5173"
 ])
