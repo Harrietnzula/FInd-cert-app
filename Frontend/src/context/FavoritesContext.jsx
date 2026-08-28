@@ -42,6 +42,7 @@ export function FavoritesProvider({ children }) {
       const full = await apiRequest(`/collections/${collection.id}`);
       setCollectionId(full.id);
       setFavorites(full.saved_events.map(savedEventToEvent));
+      return full.id;
     } catch (err) {
       console.error("Failed to load favorites:", err);
     } finally {
@@ -63,8 +64,10 @@ export function FavoritesProvider({ children }) {
   }
 
   async function addFavorite(event) {
-    if (!collectionId) return;
-    const saved = await apiRequest(`/collections/${collectionId}/events`, {
+    const targetCollectionId = collectionId || (await loadFavorites());
+    if (!targetCollectionId || isFavorite(event.id)) return;
+
+    const saved = await apiRequest(`/collections/${targetCollectionId}/events`, {
       method: "POST",
       body: {
         seatgeek_event_id: String(event.id),
