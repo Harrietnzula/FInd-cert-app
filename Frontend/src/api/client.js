@@ -1,4 +1,8 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5555";
+const API_URL = (
+  import.meta.env.VITE_API_BASE_URL ||
+  import.meta.env.VITE_API_URL ||
+  "https://find-cert-app-1.onrender.com"
+).replace(/\/$/, "");
 
 /**
  * Wrapper around fetch for talking to the FindCert Flask API.
