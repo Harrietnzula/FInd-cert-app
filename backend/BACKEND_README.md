@@ -86,4 +86,4 @@ resource belongs to `current_user` before allowing read/update/delete.
 - Set env vars: `SECRET_KEY`, `DATABASE_URL` (Render Postgres), `CORS_ORIGINS`
   (your deployed frontend URL), `SESSION_COOKIE_SAMESITE=None`,
   `SESSION_COOKIE_SECURE=True`.
-- Start command: `gunicorn run:app`
+- Start command: `sh start.sh` (or `flask --app run.py db upgrade && gunicorn run:app`)
