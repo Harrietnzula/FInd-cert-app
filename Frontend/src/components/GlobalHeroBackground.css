@@ -1,0 +1,29 @@
+.global-hero-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #17120f;
+}
+
+.global-hero-image {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 2s ease;
+}
+
+.global-hero-image.active {
+  opacity: 1;
+}
+
+.global-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 10, 8, 0.78);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
