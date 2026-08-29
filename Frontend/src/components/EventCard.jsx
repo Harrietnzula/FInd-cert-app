@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useFavorites } from "../context/FavoritesContext";
 import { useAuth } from "../context/AuthContext";
 import ConfettiBurst from "./ConfettiBurst";
+import Toast from "./Toast";
 import "./EventCard.css";
 
 function EventCard({ event, variant = "default", index = 0 }) {
@@ -12,6 +13,7 @@ function EventCard({ event, variant = "default", index = 0 }) {
   const favorited = isFavorite(event.id);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [burstTrigger, setBurstTrigger] = useState(0);
+  const [error, setError] = useState("");
 
   const dateFormatted = new Date(event.datetime_local).toLocaleDateString(
     "en-US",
@@ -38,6 +40,7 @@ function EventCard({ event, variant = "default", index = 0 }) {
       }
     } catch (err) {
       console.error("Failed to update favorite:", err);
+      setError(err.message || "Could not save favorite");
     }
   }
 
@@ -83,6 +86,7 @@ function EventCard({ event, variant = "default", index = 0 }) {
           ♥
           <ConfettiBurst trigger={burstTrigger} />
         </button>
+        <Toast message={error} onDismiss={() => setError("")} />
       </div>
 
       <div className="event-card-body">

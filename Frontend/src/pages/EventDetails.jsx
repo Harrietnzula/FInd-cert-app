@@ -1,19 +1,26 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { fetchEventDetails } from "../api/seatgeek";
 import { useFavorites } from "../context/FavoritesContext";
 import { useAuth } from "../context/AuthContext";
+import { useCollections } from "../context/CollectionsContext";
 import { recordRecent } from "../api/backend";
 import "./EventDetails.css";
 
 function EventDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { isAuthenticated } = useAuth();
+  const { collections, createCollection, addToCollection, isInCollection } = useCollections();
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCollectionId, setSelectedCollectionId] = useState("");
+  const [newCollectionName, setNewCollectionName] = useState("");
+  const [collectionMessage, setCollectionMessage] = useState("");
+  const [collectionSaving, setCollectionSaving] = useState(false);
 
   useEffect(() => {
     async function loadEvent() {
@@ -62,6 +69,43 @@ function EventDetails() {
   const image = event.performers?.[0]?.image;
   const category = event.type?.replace(/_/g, " ") || "event";
 
+  async function handleAddToCollection() {
+    if (!selectedCollectionId) return;
+    if (isInCollection(Number(selectedCollectionId), event.id)) {
+      setCollectionMessage("This event is already in that collection");
+      return;
+    }
+    setCollectionSaving(true);
+    setCollectionMessage("");
+    try {
+      await addToCollection(Number(selectedCollectionId), event);
+      setCollectionMessage("Added to collection");
+    } catch (err) {
+      setCollectionMessage(err.message);
+    } finally {
+      setCollectionSaving(false);
+    }
+  }
+
+  async function handleCreateCollection(e) {
+    e.preventDefault();
+    const name = newCollectionName.trim();
+    if (!name) return;
+    setCollectionSaving(true);
+    setCollectionMessage("");
+    try {
+      const id = await createCollection(name);
+      setSelectedCollectionId(String(id));
+      setNewCollectionName("");
+      await addToCollection(id, event);
+      setCollectionMessage("Collection created and event added");
+    } catch (err) {
+      setCollectionMessage(err.message);
+    } finally {
+      setCollectionSaving(false);
+    }
+  }
+
   return (
     <div className="event-details">
       <Link to="/" className="back-link">← Back to search</Link>
@@ -86,7 +130,17 @@ function EventDetails() {
           <div className="event-details-actions">
             <button
               className={`favorite-btn-large ${favorited ? "favorited" : ""}`}
-              onClick={() => toggleFavorite(event)}
+              onClick={async () => {
+                if (!isAuthenticated) {
+                  navigate("/login");
+                  return;
+                }
+                try {
+                  await toggleFavorite(event);
+                } catch (err) {
+                  setCollectionMessage(err.message || "Could not save favorite");
+                }
+              }}
             >
               {favorited ? "♥ Saved to favorites" : "♡ Add to favorites"}
             </button>
@@ -95,6 +149,45 @@ function EventDetails() {
               View tickets on SeatGeek →
             </a>
           </div>
+
+          {isAuthenticated && (
+            <div className="event-collection-picker">
+              <label htmlFor="event-collection">Save to a collection</label>
+              <div className="event-collection-row">
+                <select
+                  id="event-collection"
+                  value={selectedCollectionId}
+                  onChange={(e) => setSelectedCollectionId(e.target.value)}
+                >
+                  <option value="">Choose a collection</option>
+                  {collections.map((collection) => (
+                    <option key={collection.id} value={collection.id}>
+                      {collection.name}{isInCollection(collection.id, event.id) ? " (saved)" : ""}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className="event-collection-add"
+                  onClick={handleAddToCollection}
+                  disabled={!selectedCollectionId || collectionSaving}
+                >
+                  {collectionSaving ? "Saving..." : "Add event"}
+                </button>
+              </div>
+              {collectionMessage && <p className="event-collection-message">{collectionMessage}</p>}
+              <form className="event-new-collection-form" onSubmit={handleCreateCollection}>
+                <input
+                  value={newCollectionName}
+                  onChange={(e) => setNewCollectionName(e.target.value)}
+                  placeholder="Or create a new collection"
+                  aria-label="New collection name"
+                />
+                <button type="submit" disabled={!newCollectionName.trim() || collectionSaving}>
+                  Create and add
+                </button>
+              </form>
+            </div>
+          )}
 
           {event.stats?.lowest_price && (
             <p className="price-range">
