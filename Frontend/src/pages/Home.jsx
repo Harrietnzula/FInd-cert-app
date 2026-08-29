@@ -25,11 +25,85 @@ function Home() {
     async function loadFeatured() {
       try {
         const featured = await fetchFeaturedEvents();
-        const images = featured
+        const filteredFeatured = (featured || []).filter((event) => {
+          const name = `${event.title || ""} ${event.performers?.[0]?.name || ""}`.toLowerCase();
+          return !/(chris brown|usher)/i.test(name);
+        });
+
+        const fallbackFeatured = [
+          {
+            id: "fallback-1",
+            title: "Ariana Grande: Eternal Sunshine Tour",
+            datetime_local: "2026-09-10T20:00:00",
+            venue: { city: "New York, NY", name: "Madison Square Garden" },
+            performers: [{ image: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=900&q=80" }],
+            type: "concert",
+          },
+          {
+            id: "fallback-2",
+            title: "SZA: SOS Tour",
+            datetime_local: "2026-09-13T19:30:00",
+            venue: { city: "Los Angeles, CA", name: "Crypto.com Arena" },
+            performers: [{ image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=900&q=80" }],
+            type: "concert",
+          },
+          {
+            id: "fallback-3",
+            title: "Coldplay Live",
+            datetime_local: "2026-09-18T18:00:00",
+            venue: { city: "Chicago, IL", name: "Wrigley Field" },
+            performers: [{ image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=900&q=80" }],
+            type: "concert",
+          },
+          {
+            id: "fallback-4",
+            title: "Lorde: Solar Power Live",
+            datetime_local: "2026-09-22T20:00:00",
+            venue: { city: "Miami, FL", name: "Kaseya Center" },
+            performers: [{ image: "https://images.unsplash.com/photo-1501612780327-45045538702b?auto=format&fit=crop&w=900&q=80" }],
+            type: "concert",
+          },
+          {
+            id: "fallback-5",
+            title: "Tyler, The Creator",
+            datetime_local: "2026-10-02T19:00:00",
+            venue: { city: "Atlanta, GA", name: "State Farm Arena" },
+            performers: [{ image: "https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?auto=format&fit=crop&w=900&q=80" }],
+            type: "concert",
+          },
+          {
+            id: "fallback-6",
+            title: "The Weeknd: After Hours Tour",
+            datetime_local: "2026-10-08T20:30:00",
+            venue: { city: "Seattle, WA", name: "Climate Pledge Arena" },
+            performers: [{ image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=900&q=80" }],
+            type: "concert",
+          },
+          {
+            id: "fallback-7",
+            title: "Billie Eilish Live",
+            datetime_local: "2026-10-12T19:30:00",
+            venue: { city: "Boston, MA", name: "TD Garden" },
+            performers: [{ image: "https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=900&q=80" }],
+            type: "concert",
+          },
+          {
+            id: "fallback-8",
+            title: "Tame Impala in Concert",
+            datetime_local: "2026-10-18T20:00:00",
+            venue: { city: "Denver, CO", name: "Ball Arena" },
+            performers: [{ image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80" }],
+            type: "concert",
+          },
+        ];
+
+        const featuredEvents = [...filteredFeatured, ...fallbackFeatured].slice(0, 8);
+        const images = featuredEvents
           .map((event) => event.performers?.[0]?.image)
           .filter(Boolean);
+
         setHeroImages(images);
-        setPopularEvents(featured.slice(0, 8));
+        setPopularEvents(featuredEvents);
       } catch (err) {
         console.error("Couldn't load featured events:", err);
       }
