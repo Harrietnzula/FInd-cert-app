@@ -7,17 +7,22 @@ A React app for discovering live concerts, festivals, and shows — search by ar
 
 The idea came from a common complaint I kept seeing on Twitter — people frustrated with Ticketmaster's long queues and cluttered ticket listings just to find something worth going to. FindCert is a faster, cleaner way to discover live events, so you can find what you want without the wait and without the clutter.
 
-Built as a multi-phase capstone project. Phase 1 shipped the React frontend with local-state favorites. Phase 2 (current) adds a Flask + PostgreSQL backend with real user accounts and persistent, per-user collections.
+Built as a multi-phase capstone project. The current version combines a React frontend with a Flask + PostgreSQL backend for authenticated, persistent event saving.
 
 ## Features
 
 - 🔍 Real-time search against the SeatGeek Platform API
+- 📍 Nearby events view with browser location, a zoomable map, and venue markers
 - 🌆 Rotating hero background showcasing photos from popular upcoming events
+- 🖼️ Shared full-page event imagery across the application
 - ⭐ "Popular right now" section on the homepage before you've searched
 - 🎟️ Event detail pages with venue info, date/time, pricing, and ticket links
-- ❤️ Favorite events from search results, the popular section, or the detail page
+- ❤️ Server-backed favorite events for each signed-in user
 - 🔐 User accounts — sign up, log in, log out (session-based auth)
-- 📁 Named collections (e.g. "Bucket List") saved server-side per user, persisting across devices and sessions
+- 📁 Create collections and add events from the event details page
+- 👤 Profile page with collections, recents, event-image avatars, and profile picture URLs
+- 🔔 Upcoming-event notifications with dismiss controls
+- 🔊 One-time startup chime with an autoplay fallback control
 - ⚡ Loading, error, and empty states handled throughout
 - 📱 Responsive layout that adapts from mobile to desktop
 - 🪩 Custom disco-ball wordmark logo
@@ -47,7 +52,7 @@ Built as a multi-phase capstone project. Phase 1 shipped the React frontend with
 1. Clone the repo:
    ```bash
    git clone https://github.com/Harrietnzula/FInd-cert-app.git
-   cd FInd-cert-app
+   cd FInd-cert-app/Frontend
    ```
 
 2. Install dependencies:
@@ -60,7 +65,7 @@ Built as a multi-phase capstone project. Phase 1 shipped the React frontend with
    - Create an app in your account's developer section
    - Copy your `client_id` (no secret key needed for this project)
 
-4. Create a `.env` file in the project root:
+4. Create a `Frontend/.env` file:
    ```
    VITE_SEATGEEK_CLIENT_ID=your_client_id_here
    VITE_API_BASE_URL=http://localhost:5555
@@ -78,13 +83,12 @@ Built as a multi-phase capstone project. Phase 1 shipped the React frontend with
 See [`backend/BACKEND_README.md`](./backend/BACKEND_README.md) for full setup, API endpoint docs, and the auth model. Quick start:
 
 ```bash
-cd backend
+cd FInd-cert-app/backend
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env   # fill in real values
-export FLASK_APP=run.py
-flask db upgrade
+flask --app run.py db upgrade
 python run.py
 ```
 
@@ -106,7 +110,7 @@ Vite environment variables are baked in at build time, so a new deploy is requir
 
 - Root Directory: `backend`
 - Build Command: `pip install -r requirements.txt`
-- Start Command: `gunicorn run:app`
+- Start Command: `sh start.sh`
 
 Required Render environment variables:
 | Variable | Value |
@@ -116,16 +120,11 @@ Required Render environment variables:
 | `CORS_ORIGINS` | `https://f-ind-cert-app.vercel.app` |
 | `SESSION_COOKIE_SAMESITE` | `None` |
 | `SESSION_COOKIE_SECURE` | `True` |
-| `PYTHON_VERSION` | `3.11.9` (pins a version compatible with `psycopg2-binary`) |
+| `PYTHON_VERSION` | `3.11.11` (pins a version compatible with `psycopg2-binary`) |
 
 `SESSION_COOKIE_SAMESITE=None` and `SESSION_COOKIE_SECURE=True` are required because the frontend (`vercel.app`) and backend (`onrender.com`) are different domains — without them, the session cookie won't survive cross-site requests.
 
-After the first deploy, run migrations against the live database (Render's free tier has no Shell access, so run this from a local machine using the database's **External** Database URL):
-```bash
-export DATABASE_URL="<external-url-from-render>"
-export FLASK_APP=run.py
-flask db upgrade
-```
+The Render start script runs `flask --app run.py db upgrade` before Gunicorn. Set the service Root Directory to `backend` so `sh start.sh` can find the script.
 
 ## API Used
 
@@ -136,12 +135,13 @@ Endpoints used:
 - `GET /2/events/{id}?client_id={id}` — get details for a single event
 - `GET /2/events?sort=score.desc&per_page=10&client_id={id}` — fetch popular events for the homepage's hero background and "Popular right now" section
 
+Nearby results use SeatGeek's geolocation search and the browser's location permission. No separate Kenya provider is configured.
+
 ## Known Issues / Limitations
 
 - Some SeatGeek events are missing performer images; these fall back to a placeholder icon
-- No pagination yet on search results — SeatGeek's default result set (first page only) is shown
-- No debouncing on search input; each submit triggers a fresh request
 - Render's free tier spins down after inactivity — the first backend request after idle time can take 30–60 seconds
+- Browsers may block the startup chime until the user enables sound
 
 ## Project Structure
 
@@ -153,9 +153,9 @@ src/
 ├── components/   # Reusable UI (Navbar, EventCard, ListMenu, etc.)
 ├── context/      # Shared state via React Context
 │   ├── AuthContext.jsx        # logged-in user, signup/login/logout
-│   ├── FavoritesContext.jsx   # local favorites (Phase 1 behavior)
-│   └── CollectionsContext.jsx # server-backed collections (Phase 2)
-├── pages/        # Route-level views (Home, EventDetails, Favorites, Login, Signup)
+│   ├── FavoritesContext.jsx   # server-backed favorites collection
+│   └── CollectionsContext.jsx # server-backed named collections
+├── pages/        # Home, EventDetails, Nearby, Favorites, Profile, Login, Signup
 └── App.jsx       # Root component, routing setup
 
 backend/
@@ -163,6 +163,8 @@ backend/
 │   ├── auth/           # signup, login, logout, /auth/me
 │   ├── collections/    # CRUD for user collections
 │   ├── saved_events/   # CRUD for events saved within a collection
+│   ├── recents/        # recently viewed events
+│   ├── notifications/ # upcoming event reminders
 │   ├── models.py       # User, Collection, SavedEvent
 │   └── config.py       # env-driven config (DB URL, CORS, cookies)
 ├── migrations/          # Alembic migration history
@@ -171,5 +173,5 @@ backend/
 
 ## Roadmap
 
-- **Phase 2 (current):** Flask + PostgreSQL backend, user accounts, server-side collections — ✅ backend deployed, frontend wiring in progress
-- **Phase 3:** Migrate `FavoritesContext` fully onto the backend so favorites persist per-user like collections do; add collection management UI (rename, delete, view saved events per collection)
+- **Current:** React frontend, Flask + PostgreSQL backend, authenticated favorites, collections, recents, notifications, Nearby map, and profile tools
+- **Next:** Add password reset, image uploads instead of image URLs, and broader event-provider coverage where a stable public API is available

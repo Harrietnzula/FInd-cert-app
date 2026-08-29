@@ -13,6 +13,8 @@
 - **User** — has many Collections
 - **Collection** — belongs to a User, has many SavedEvents
 - **SavedEvent** — belongs to a Collection; stores a snapshot of a SeatGeek event
+- **RecentEvent** — records events viewed by a User
+- **DismissedNotification** — records dismissed upcoming-event reminders
 
 ## Setup
 
@@ -36,10 +38,7 @@
 
 4. Initialize and run migrations:
    ```bash
-   export FLASK_APP=run.py   # or `set` on Windows
-   flask db init
-   flask db migrate -m "initial tables"
-   flask db upgrade
+   flask --app run.py db upgrade
    ```
 
 5. Run the server:
@@ -64,6 +63,7 @@ resource belongs to `current_user` before allowing read/update/delete.
 | POST   | /auth/login     | Log in                         |
 | POST   | /auth/logout    | Log out (requires login)       |
 | GET    | /auth/me        | Get current logged-in user     |
+| PATCH  | /auth/profile   | Update profile picture URL     |
 
 ### Collections
 | Method | Route                    | Description                          |
@@ -81,6 +81,15 @@ resource belongs to `current_user` before allowing read/update/delete.
 | POST   | /collections/:id/events                   | Add an event to a collection     |
 | PATCH  | /events/:id                               | Update a saved event             |
 | DELETE | /events/:id                               | Remove a saved event             |
+
+### Recents and Notifications
+| Method | Route                          | Description                    |
+|--------|--------------------------------|--------------------------------|
+| GET    | /recents                       | List recently viewed events    |
+| POST   | /recents                       | Record a recently viewed event |
+| DELETE | /recents/:id                   | Remove a recent event          |
+| GET    | /notifications                 | List upcoming reminders        |
+| POST   | /notifications/:id/dismiss     | Dismiss an upcoming reminder   |
 
 ## Deploying (e.g. Render)
 - Set env vars: `SECRET_KEY`, `DATABASE_URL` (Render Postgres), `CORS_ORIGINS`
