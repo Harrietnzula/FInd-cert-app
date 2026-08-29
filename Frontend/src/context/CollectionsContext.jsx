@@ -57,11 +57,17 @@ export function CollectionsProvider({ children }) {
   }
 
   async function addToCollection(collectionId, event) {
+    const collection = collections.find((item) => item.id === collectionId);
+    if (collection && isInCollection(collectionId, event.id)) return;
     const saved = await api.addSavedEvent(collectionId, toSavedEventPayload(event));
     setCollections((prev) =>
       prev.map((c) =>
         c.id === collectionId
-          ? { ...c, saved_events: [...(c.saved_events || []), saved] }
+          ? {
+              ...c,
+              saved_events: [...(c.saved_events || []), saved],
+              event_count: (c.event_count || 0) + 1,
+            }
           : c
       )
     );
@@ -82,7 +88,11 @@ export function CollectionsProvider({ children }) {
     setCollections((prev) =>
       prev.map((c) =>
         c.id === collectionId
-          ? { ...c, saved_events: c.saved_events.filter((e) => e.id !== saved.id) }
+          ? {
+              ...c,
+              saved_events: c.saved_events.filter((e) => e.id !== saved.id),
+              event_count: Math.max(0, (c.event_count || 0) - 1),
+            }
           : c
       )
     );

@@ -226,7 +226,17 @@ function Profile() {
                     className="profile-collection-row"
                     onClick={() => setSelectedId(c.id)}
                   >
-                    <span className="profile-collection-icon">▤</span>
+                    <span className="profile-collection-icon">
+                      {c.saved_events?.[0]?.image_url ? (
+                        <img
+                          src={c.saved_events[0].image_url}
+                          alt=""
+                          loading="lazy"
+                        />
+                      ) : (
+                        "▤"
+                      )}
+                    </span>
                     <span className="profile-collection-info">
                       <span className="profile-collection-name">{c.name}</span>
                       <span className="profile-collection-count">
