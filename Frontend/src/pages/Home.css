@@ -54,7 +54,7 @@
   box-shadow: 0 28px 60px rgba(0, 0, 0, 0.24);
 }
 
-.brand-wrap {
+.home-brand {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -63,37 +63,26 @@
   margin-bottom: 12px;
 }
 
-.brand-mark {
-  width: 82px;
-  height: 82px;
-  display: grid;
-  place-items: center;
+.home-brand-icon {
   color: var(--accent);
+  width: 64px;
+  height: 64px;
+  display: block;
   filter: drop-shadow(0 14px 28px rgba(255, 90, 60, 0.28));
 }
 
-.brand-mark svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.brand-copy {
-  text-align: center;
-}
-
-.brand-wordmark {
-  font-family: "Bricolage Grotesque", "Space Grotesk", var(--font-sans);
+.home-brand-wordmark {
+  font-family: "Bricolage Grotesque", var(--font-sans);
   font-style: italic;
   font-weight: 800;
-  font-size: clamp(32px, 4vw, 60px);
-  letter-spacing: -0.04em;
-  line-height: 0.9;
-  margin-bottom: 0;
+  font-size: clamp(32px, 4vw, 52px);
+  letter-spacing: -0.02em;
   color: var(--text-primary);
+  line-height: 1;
+  margin: 0;
 }
 
-.brand-wordmark span {
+.home-brand-wordmark span {
   color: var(--accent);
 }
 
@@ -224,17 +213,13 @@
     border-radius: var(--radius-md);
   }
 
-  .brand-wrap {
+  .home-brand {
     gap: 8px;
   }
 
-  .brand-mark {
-    width: 68px;
-    height: 68px;
-  }
-
-  .brand-copy {
-    text-align: center;
+  .home-brand-icon {
+    width: 56px;
+    height: 56px;
   }
 
   .hero h1 {

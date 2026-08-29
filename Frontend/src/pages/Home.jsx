@@ -99,21 +99,24 @@ function Home() {
         </div>
 
         <div className="hero-content">
-          <div className="brand-wrap" aria-label="FindCert logo and name">
-            <div className="brand-mark" aria-hidden="true">
-              <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="FindCert logo icon">
-                <circle cx="20" cy="20" r="14" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M6 20C6 20 12 14 20 14C28 14 34 20 34 20" stroke="currentColor" strokeWidth="1" opacity="0.6" />
-                <path d="M6 20C6 20 12 26 20 26C28 26 34 20 34 20" stroke="currentColor" strokeWidth="1" opacity="0.6" />
-                <ellipse cx="20" cy="20" rx="6" ry="14" stroke="currentColor" strokeWidth="1" opacity="0.6" />
-                <ellipse cx="20" cy="20" rx="14" ry="6" stroke="currentColor" strokeWidth="1" opacity="0.6" />
-                <circle cx="15" cy="14" r="1.3" fill="currentColor" />
-                <circle cx="24" cy="12" r="1" fill="currentColor" />
-              </svg>
-            </div>
-            <div className="brand-copy">
-              <h1 className="brand-wordmark">Find<span>Cert</span></h1>
-            </div>
+          <div className="home-brand" aria-label="FindCert logo and name">
+            <svg
+              className="home-brand-icon"
+              width="64"
+              height="64"
+              viewBox="0 0 40 40"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="20" cy="20" r="14" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M6 20C6 20 12 14 20 14C28 14 34 20 34 20" stroke="currentColor" strokeWidth="1" opacity="0.6" />
+              <path d="M6 20C6 20 12 26 20 26C28 26 34 20 34 20" stroke="currentColor" strokeWidth="1" opacity="0.6" />
+              <ellipse cx="20" cy="20" rx="6" ry="14" stroke="currentColor" strokeWidth="1" opacity="0.6" />
+              <ellipse cx="20" cy="20" rx="14" ry="6" stroke="currentColor" strokeWidth="1" opacity="0.6" />
+              <circle cx="15" cy="14" r="1.3" fill="currentColor" />
+              <circle cx="24" cy="12" r="1" fill="currentColor" />
+            </svg>
+            <h1 className="home-brand-wordmark">Find<span>Cert</span></h1>
           </div>
           <p className="hero-intro-copy">
             Discover the next unforgettable live show and get tickets before the crowd does.
