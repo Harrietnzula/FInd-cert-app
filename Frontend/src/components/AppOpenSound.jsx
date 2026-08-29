@@ -1,9 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import "./AppOpenSound.css";
 
 function playDing() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) return;
+  if (!AudioContext) return false;
   const context = new AudioContext();
+  if (context.state === "suspended") {
+    context.close();
+    return false;
+  }
   const oscillator = context.createOscillator();
   const gain = context.createGain();
   const secondOscillator = context.createOscillator();
@@ -25,14 +30,29 @@ function playDing() {
   oscillator.stop(context.currentTime + 0.24);
   secondOscillator.stop(context.currentTime + 0.36);
   secondOscillator.addEventListener("ended", () => context.close());
+  return true;
 }
 
 function AppOpenSound() {
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
+
   useEffect(() => {
-    playDing();
+    if (!playDing()) setAutoplayBlocked(true);
   }, []);
 
-  return null;
+  if (!autoplayBlocked) return null;
+
+  return (
+    <button
+      className="app-sound-enable"
+      onClick={() => {
+        if (playDing()) setAutoplayBlocked(false);
+      }}
+      aria-label="Enable startup sound"
+    >
+      Enable sound
+    </button>
+  );
 }
 
 export default AppOpenSound;
