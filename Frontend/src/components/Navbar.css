@@ -96,3 +96,28 @@
   height: 100%;
   object-fit: cover;
 }
+
+@media (max-width: 720px) {
+  .navbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .navbar-logo {
+    font-size: 23px;
+  }
+
+  .navbar-links {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    gap: 14px 18px;
+    flex-wrap: wrap;
+  }
+
+  .navbar-links a,
+  .navbar-logout {
+    font-size: 13px;
+  }
+}

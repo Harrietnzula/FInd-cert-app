@@ -125,3 +125,22 @@
 .event-card-pop:hover {
   transform: scale(1.04) !important;
 }
+
+@media (max-width: 640px) {
+  .event-card {
+    padding: 10px;
+  }
+
+  .event-card-art {
+    margin-bottom: 12px;
+  }
+
+  .favorite-btn {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .event-card-pop:hover {
+    transform: none !important;
+  }
+}

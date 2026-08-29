@@ -44,4 +44,12 @@
     align-items: stretch;
     flex-direction: column;
   }
+
+  .kenya-header h1 {
+    font-size: 30px;
+  }
+
+  .kenya-header select {
+    width: 100%;
+  }
 }
