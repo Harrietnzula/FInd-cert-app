@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import NotificationBell from "./NotificationBell";
 import "./Navbar.css";
 
 function Navbar() {
@@ -44,10 +45,18 @@ function Navbar() {
       </Link>
       <div className="navbar-links">
         <Link to="/">Search</Link>
+        <Link to="/nearby">Nearby</Link>
         <Link to="/favorites">Favorites</Link>
         {isAuthenticated ? (
           <>
-            <span className="navbar-username">{user.username}</span>
+            <NotificationBell />
+            <Link to="/profile" className="navbar-profile-icon" aria-label="Profile" title={user.username}>
+              {user.avatar_url ? (
+                <img src={user.avatar_url} alt="" />
+              ) : (
+                <span>{(user.username || "?").slice(0, 2).toUpperCase()}</span>
+              )}
+            </Link>
             <button onClick={handleLogout} className="navbar-logout">
               Log out
             </button>

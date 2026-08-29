@@ -9,6 +9,8 @@ import PageTransition from "./components/PageTransition";
 import Home from "./pages/Home";
 import EventDetails from "./pages/EventDetails";
 import Favorites from "./pages/Favorites";
+import Profile from "./pages/Profile";
+import Nearby from "./pages/Nearby";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import "./App.css";
@@ -31,6 +33,8 @@ function App() {
                 <Route path="/" element={<PageTransition><Home /></PageTransition>} />
                 <Route path="/event/:id" element={<PageTransition><EventDetails /></PageTransition>} />
                 <Route path="/favorites" element={<PageTransition><Favorites /></PageTransition>} />
+                <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
+                <Route path="/nearby" element={<PageTransition><Nearby /></PageTransition>} />
                 <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
                 <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
               </Routes>
