@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { fetchEvents, fetchFeaturedEvents } from "../api/seatgeek";
 import EventCard from "../components/EventCard";
 import SparkleField from "../components/SparkleField";
@@ -10,6 +10,7 @@ import Toast from "../components/Toast";
 import "./Home.css";
 
 function Home() {
+  const searchInputRef = useRef(null);
   const [query, setQuery] = useState("");
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -64,6 +65,14 @@ function Home() {
     runSearch(query);
   }
 
+  function handleGetStarted() {
+    setHasSearched(false);
+    setTimeout(() => {
+      searchInputRef.current?.focus();
+      searchInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
+  }
+
   function handleGenreClick(genre) {
     setQuery(genre);
     runSearch(genre);
@@ -90,11 +99,22 @@ function Home() {
         </div>
 
         <div className="hero-content">
-          <h1>Find your next <span>live</span> moment</h1>
-          <p>Search concerts, festivals, and shows happening near you or anywhere else.</p>
+          <div className="brand-wrap" aria-label="FindCert logo and name">
+            <div className="brand-mark">F</div>
+            <div className="brand-copy">
+              <span className="brand-kicker">Welcome</span>
+              <h1>FindCert</h1>
+            </div>
+          </div>
+          <p className="hero-intro-copy">
+            Discover the next unforgettable live show and get tickets before the crowd does.
+          </p>
+
+          <button type="button" className="get-started-btn" onClick={handleGetStarted}>Get started</button>
 
           <form onSubmit={handleSearch} className="search-form">
             <input
+              ref={searchInputRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}

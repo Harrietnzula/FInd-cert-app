@@ -15,6 +15,14 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    function handleUserUpdated(event) {
+      setUser(event.detail);
+    }
+    window.addEventListener("findcert:user-updated", handleUserUpdated);
+    return () => window.removeEventListener("findcert:user-updated", handleUserUpdated);
+  }, []);
+
   async function signup(credentials) {
     const data = await api.signup(credentials);
     setUser(data);

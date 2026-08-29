@@ -14,19 +14,13 @@ import Nearby from "./pages/Nearby";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import GlobalHeroBackground from "./components/GlobalHeroBackground";
-import AppOpenSound from "./components/AppOpenSound";
 import "./App.css";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
 
   if (showSplash) {
-    return (
-      <>
-        <AppOpenSound />
-        <Splash onFinish={() => setShowSplash(false)} />
-      </>
-    );
+    return <Splash onFinish={() => setShowSplash(false)} />;
   }
 
   return (
@@ -34,7 +28,6 @@ function App() {
       <FavoritesProvider>
         <CollectionsProvider>
           <BrowserRouter>
-            <AppOpenSound />
             <GlobalHeroBackground />
             <Navbar />
             <main>
