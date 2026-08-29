@@ -1,4 +1,8 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5555";
+const BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL ||
+  import.meta.env.VITE_API_URL ||
+  "https://find-cert-app-1.onrender.com"
+).replace(/\/$/, "");
 
 async function request(path, options = {}) {
   const response = await fetch(`${BASE_URL}${path}`, {
