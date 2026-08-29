@@ -150,45 +150,6 @@ function EventDetails() {
             </a>
           </div>
 
-          {isAuthenticated && (
-            <div className="event-collection-picker">
-              <label htmlFor="event-collection">Save to a collection</label>
-              <div className="event-collection-row">
-                <select
-                  id="event-collection"
-                  value={selectedCollectionId}
-                  onChange={(e) => setSelectedCollectionId(e.target.value)}
-                >
-                  <option value="">Choose a collection</option>
-                  {collections.map((collection) => (
-                    <option key={collection.id} value={collection.id}>
-                      {collection.name}{isInCollection(collection.id, event.id) ? " (saved)" : ""}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  className="event-collection-add"
-                  onClick={handleAddToCollection}
-                  disabled={!selectedCollectionId || collectionSaving}
-                >
-                  {collectionSaving ? "Saving..." : "Add event"}
-                </button>
-              </div>
-              {collectionMessage && <p className="event-collection-message">{collectionMessage}</p>}
-              <form className="event-new-collection-form" onSubmit={handleCreateCollection}>
-                <input
-                  value={newCollectionName}
-                  onChange={(e) => setNewCollectionName(e.target.value)}
-                  placeholder="Or create a new collection"
-                  aria-label="New collection name"
-                />
-                <button type="submit" disabled={!newCollectionName.trim() || collectionSaving}>
-                  Create and add
-                </button>
-              </form>
-            </div>
-          )}
-
           {event.stats?.lowest_price && (
             <p className="price-range">
               Tickets from <span>${event.stats.lowest_price}</span>
@@ -196,6 +157,52 @@ function EventDetails() {
           )}
         </div>
       </div>
+
+      {isAuthenticated && (
+        <div className="event-collection-picker">
+          <div className="event-collection-heading">
+            <span className="event-collection-icon">✦</span>
+            <div>
+              <h2>Build your setlist</h2>
+              <p>Keep this event with the shows you want to remember.</p>
+            </div>
+          </div>
+          <label htmlFor="event-collection">Save to a collection</label>
+          <div className="event-collection-row">
+            <select
+              id="event-collection"
+              value={selectedCollectionId}
+              onChange={(e) => setSelectedCollectionId(e.target.value)}
+            >
+              <option value="">Choose a collection</option>
+              {collections.map((collection) => (
+                <option key={collection.id} value={collection.id}>
+                  {collection.name}{isInCollection(collection.id, event.id) ? " (saved)" : ""}
+                </option>
+              ))}
+            </select>
+            <button
+              className="event-collection-add"
+              onClick={handleAddToCollection}
+              disabled={!selectedCollectionId || collectionSaving}
+            >
+              {collectionSaving ? "Saving..." : "Add event"}
+            </button>
+          </div>
+          {collectionMessage && <p className="event-collection-message">{collectionMessage}</p>}
+          <form className="event-new-collection-form" onSubmit={handleCreateCollection}>
+            <input
+              value={newCollectionName}
+              onChange={(e) => setNewCollectionName(e.target.value)}
+              placeholder="Or create a new collection"
+              aria-label="New collection name"
+            />
+            <button type="submit" disabled={!newCollectionName.trim() || collectionSaving}>
+              Create and add
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
