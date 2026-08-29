@@ -46,6 +46,7 @@ function NotificationBell() {
         className="notification-bell-btn"
         onClick={() => setOpen((o) => !o)}
         aria-label="Notifications"
+        aria-expanded={open}
       >
         🔔
         {notifications.length > 0 && (
@@ -54,7 +55,7 @@ function NotificationBell() {
       </button>
 
       {open && (
-        <div className="notification-dropdown">
+        <div className="notification-dropdown" role="dialog" aria-label="Notifications">
           <h4>Upcoming</h4>
           {notifications.length === 0 ? (
             <p className="notification-empty">Nothing coming up in the next two weeks.</p>

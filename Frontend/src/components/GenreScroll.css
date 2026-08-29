@@ -48,6 +48,7 @@
 }
 
 .genre-icon {
+  position: relative;
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -55,6 +56,21 @@
   align-items: center;
   justify-content: center;
   font-size: 15px;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  animation: moon-phase-spin 4s ease-in-out infinite;
+}
+
+.genre-icon::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: -5px;
+  width: 19px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(10, 10, 10, 0.5);
+  transform: rotate(18deg);
 }
 
 @keyframes pill-pop-in {
@@ -72,4 +88,15 @@
   0% { transform: scale(1); }
   40% { transform: scale(1.08); }
   100% { transform: scale(1); }
+}
+
+@keyframes moon-phase-spin {
+  0%, 100% { transform: perspective(120px) rotateY(-18deg); }
+  50% { transform: perspective(120px) rotateY(18deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .genre-icon {
+    animation: none;
+  }
 }

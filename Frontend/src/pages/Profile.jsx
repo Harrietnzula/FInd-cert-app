@@ -29,6 +29,14 @@ function Profile() {
 
   const [recents, setRecents] = useState([]);
   const [recentsLoading, setRecentsLoading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || "");
+  const [editingAvatar, setEditingAvatar] = useState(false);
+  const [avatarSaving, setAvatarSaving] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
+
+  useEffect(() => {
+    setAvatarUrl(user?.avatar_url || "");
+  }, [user?.avatar_url]);
 
   useEffect(() => {
     if (!isAuthenticated || tab !== "recents") return;
@@ -79,6 +87,21 @@ function Profile() {
     setRecents((prev) => prev.filter((r) => r.id !== recent.id));
   }
 
+  async function handleAvatarSave(e) {
+    e.preventDefault();
+    setAvatarSaving(true);
+    setAvatarError("");
+    try {
+      const updated = await api.updateProfile({ avatar_url: avatarUrl });
+      window.dispatchEvent(new CustomEvent("findcert:user-updated", { detail: updated }));
+      setEditingAvatar(false);
+    } catch (err) {
+      setAvatarError(err.message);
+    } finally {
+      setAvatarSaving(false);
+    }
+  }
+
   if (!isAuthenticated) {
     return (
       <div className="profile-page">
@@ -107,7 +130,32 @@ function Profile() {
           <h1>{user?.username}</h1>
           <p className="profile-subtext">{user?.email}</p>
         </div>
+        <button
+          className="profile-avatar-edit"
+          onClick={() => setEditingAvatar((open) => !open)}
+        >
+          {editingAvatar ? "Cancel" : "Change picture"}
+        </button>
       </header>
+
+      {editingAvatar && (
+        <form className="profile-avatar-form" onSubmit={handleAvatarSave}>
+          <label htmlFor="avatar-url">Profile picture URL</label>
+          <div className="profile-avatar-form-row">
+            <input
+              id="avatar-url"
+              type="url"
+              placeholder="https://example.com/your-picture.jpg"
+              value={avatarUrl}
+              onChange={(e) => setAvatarUrl(e.target.value)}
+            />
+            <button type="submit" disabled={avatarSaving}>
+              {avatarSaving ? "Saving..." : "Save"}
+            </button>
+          </div>
+          {avatarError && <p className="auth-error">{avatarError}</p>}
+        </form>
+      )}
 
       <div className="profile-tabs">
         <button

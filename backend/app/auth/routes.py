@@ -123,3 +123,19 @@ def me():
     if not current_user.is_authenticated:
         return jsonify({"error": "not authenticated"}), 401
     return jsonify(current_user.to_dict()), 200
+
+
+@auth_bp.route("/profile", methods=["PATCH"])
+@login_required
+def update_profile():
+    data = request.get_json() or {}
+    if "avatar_url" in data:
+        avatar_url = (data.get("avatar_url") or "").strip()
+        if avatar_url and not avatar_url.startswith(("http://", "https://")):
+            return jsonify({"error": "profile picture must be a valid image URL"}), 400
+        if len(avatar_url) > 500:
+            return jsonify({"error": "profile picture URL is too long"}), 400
+        current_user.avatar_url = avatar_url or None
+
+    db.session.commit()
+    return jsonify(current_user.to_dict()), 200

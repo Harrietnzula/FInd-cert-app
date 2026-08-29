@@ -7,6 +7,14 @@
   font-size: 18px;
   line-height: 1;
   padding: 6px;
+  border-radius: 50%;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.notification-bell-btn:hover,
+.notification-bell-btn[aria-expanded="true"] {
+  background: rgba(255, 90, 60, 0.18);
+  transform: rotate(-8deg) scale(1.06);
 }
 
 .notification-badge {
@@ -105,4 +113,15 @@
 
 .notification-dismiss:hover {
   color: var(--accent);
+}
+
+@media (max-width: 720px) {
+  .notification-dropdown {
+    position: fixed;
+    top: 76px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+    max-height: min(360px, calc(100vh - 96px));
+  }
 }

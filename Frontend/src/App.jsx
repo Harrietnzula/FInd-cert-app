@@ -14,6 +14,7 @@ import Nearby from "./pages/Nearby";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import GlobalHeroBackground from "./components/GlobalHeroBackground";
+import AppOpenSound from "./components/AppOpenSound";
 import "./App.css";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
       <FavoritesProvider>
         <CollectionsProvider>
           <BrowserRouter>
+            <AppOpenSound />
             <GlobalHeroBackground />
             <Navbar />
             <main>

@@ -56,6 +56,13 @@ export function getCurrentUser() {
   return request("/auth/me");
 }
 
+export function updateProfile(updates) {
+  return request("/auth/profile", {
+    method: "PATCH",
+    body: updates,
+  });
+}
+
 // --- Collections ---
 export function fetchCollections({ page = 1, perPage = 10 } = {}) {
   return request(`/collections?page=${page}&per_page=${perPage}`);
