@@ -85,7 +85,17 @@ export function FavoritesProvider({ children }) {
   async function removeFavorite(eventId) {
     const existing = favorites.find((e) => String(e.id) === String(eventId));
     if (!existing) return;
-    await apiRequest(`/events/${existing._savedEventId}`, { method: "DELETE" });
+    if (!existing._savedEventId) {
+      await loadFavorites();
+      throw new Error("Favorite data was out of date. Please try again.");
+    }
+
+    try {
+      await apiRequest(`/events/${existing._savedEventId}`, { method: "DELETE" });
+    } catch (error) {
+      await loadFavorites();
+      throw error;
+    }
     setFavorites((prev) => prev.filter((e) => String(e.id) !== String(eventId)));
   }
 
