@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 
 from ..extensions import db
-from ..models import Collection, SavedEvent
+from ..models import Collection, DismissedNotification, SavedEvent
 
 saved_events_bp = Blueprint("saved_events", __name__)
 
@@ -100,6 +100,9 @@ def delete_event(event_id):
     if error:
         return error
 
+    DismissedNotification.query.filter_by(saved_event_id=event.id).delete(
+        synchronize_session=False
+    )
     db.session.delete(event)
     db.session.commit()
     return jsonify({"message": "event deleted"}), 200
