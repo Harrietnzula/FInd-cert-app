@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "./AppOpenSound.css";
 
+let playedThisLoad = false;
+
 function playDing() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   if (!AudioContext) return false;
@@ -37,7 +39,12 @@ function AppOpenSound() {
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
 
   useEffect(() => {
-    if (!playDing()) setAutoplayBlocked(true);
+    if (playedThisLoad) return;
+    if (playDing()) {
+      playedThisLoad = true;
+    } else {
+      setAutoplayBlocked(true);
+    }
   }, []);
 
   if (!autoplayBlocked) return null;
@@ -46,7 +53,10 @@ function AppOpenSound() {
     <button
       className="app-sound-enable"
       onClick={() => {
-        if (playDing()) setAutoplayBlocked(false);
+        if (playDing()) {
+          playedThisLoad = true;
+          setAutoplayBlocked(false);
+        }
       }}
       aria-label="Enable startup sound"
     >

@@ -21,7 +21,12 @@ function App() {
   const [showSplash, setShowSplash] = useState(true);
 
   if (showSplash) {
-    return <Splash onFinish={() => setShowSplash(false)} />;
+    return (
+      <>
+        <AppOpenSound />
+        <Splash onFinish={() => setShowSplash(false)} />
+      </>
+    );
   }
 
   return (
