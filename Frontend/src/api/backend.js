@@ -56,12 +56,6 @@ export function getCurrentUser() {
   return request("/auth/me");
 }
 
-export function fetchKenyanEvents({ city = "", perPage = 24 } = {}) {
-  const params = new URLSearchParams({ per_page: String(perPage) });
-  if (city) params.set("city", city);
-  return request(`/events/kenya?${params}`);
-}
-
 // --- Collections ---
 export function fetchCollections({ page = 1, perPage = 10 } = {}) {
   return request(`/collections?page=${page}&per_page=${perPage}`);
