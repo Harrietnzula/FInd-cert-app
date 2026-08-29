@@ -1,0 +1,38 @@
+.google-signin-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.auth-divider {
+  width: 100%;
+  text-align: center;
+  position: relative;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: var(--border);
+}
+
+.auth-divider::before {
+  left: 0;
+}
+
+.auth-divider::after {
+  right: 0;
+}
+
+.google-signin-btn {
+  display: flex;
+  justify-content: center;
+}

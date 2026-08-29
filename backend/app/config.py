@@ -26,3 +26,11 @@ class Config:
     # set SESSION_COOKIE_SAMESITE=None and SESSION_COOKIE_SECURE=True.
     SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "Lax")
     SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE", "False") == "True"
+
+    # OAuth client ID from https://console.cloud.google.com/apis/credentials
+    # (Web application type). Used to verify the ID token the frontend gets
+    # back from Google Identity Services.
+    GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
+
+    # How many days out a saved event counts as an "upcoming" notification.
+    NOTIFICATION_WINDOW_DAYS = int(os.environ.get("NOTIFICATION_WINDOW_DAYS", "14"))

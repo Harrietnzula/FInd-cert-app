@@ -67,6 +67,11 @@ export function CollectionsProvider({ children }) {
     );
   }
 
+  async function deleteCollection(collectionId) {
+    await api.deleteCollection(collectionId);
+    setCollections((prev) => prev.filter((c) => c.id !== collectionId));
+  }
+
   async function removeFromCollection(collectionId, seatgeekEventId) {
     const collection = collections.find((c) => c.id === collectionId);
     const saved = collection?.saved_events?.find(
@@ -98,6 +103,7 @@ export function CollectionsProvider({ children }) {
         loading,
         error,
         createCollection,
+        deleteCollection,
         addToCollection,
         removeFromCollection,
         isInCollection,

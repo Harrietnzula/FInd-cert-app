@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import GoogleSignInButton from "../components/GoogleSignInButton";
 import "./Auth.css";
 
 function Login() {
@@ -61,6 +62,8 @@ function Login() {
         <p className="auth-switch">
           Don't have an account? <Link to="/signup">Sign up</Link>
         </p>
+
+        <GoogleSignInButton />
       </form>
     </div>
   );

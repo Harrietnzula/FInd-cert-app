@@ -1,0 +1,80 @@
+.saved-event-card {
+  position: relative;
+  display: flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.saved-event-card:hover {
+  background: var(--bg-card-hover);
+  transform: translateY(-1px);
+}
+
+.saved-event-card-link {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  gap: 12px;
+  padding: 10px;
+}
+
+.saved-event-card-art {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-elevated);
+}
+
+.saved-event-card-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.saved-event-card-art-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 20px;
+}
+
+.saved-event-card-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.saved-event-card-body h4 {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.saved-event-card-meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.saved-event-card-remove {
+  flex-shrink: 0;
+  width: 32px;
+  font-size: 18px;
+  color: var(--text-muted);
+  transition: color 0.15s ease;
+}
+
+.saved-event-card-remove:hover {
+  color: var(--accent);
+}

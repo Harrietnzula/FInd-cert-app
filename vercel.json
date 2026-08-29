@@ -1,5 +1,5 @@
-Is it this?
-CORS(app, origins=[
-    "https://f-ind-cert-app.vercel.app/",
-    "http://localhost:5173"
-])
+{
+    "rewrites": [
+        { "source": "/(.*)", "destination": "/index.html" }
+    ]
+}

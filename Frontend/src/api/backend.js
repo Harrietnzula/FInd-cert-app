@@ -37,6 +37,13 @@ export function login({ email, password }) {
   });
 }
 
+export function loginWithGoogle(credential) {
+  return request("/auth/google", {
+    method: "POST",
+    body: JSON.stringify({ credential }),
+  });
+}
+
 export function logout() {
   return request("/auth/logout", { method: "POST" });
 }
@@ -95,4 +102,29 @@ export function updateSavedEvent(eventId, updates) {
 
 export function removeSavedEvent(eventId) {
   return request(`/events/${eventId}`, { method: "DELETE" });
+}
+
+// --- Recents ---
+export function fetchRecents({ limit = 20 } = {}) {
+  return request(`/recents?limit=${limit}`);
+}
+
+export function recordRecent(event) {
+  return request("/recents", {
+    method: "POST",
+    body: JSON.stringify(event),
+  });
+}
+
+export function removeRecent(recentId) {
+  return request(`/recents/${recentId}`, { method: "DELETE" });
+}
+
+// --- Notifications ---
+export function fetchNotifications() {
+  return request("/notifications");
+}
+
+export function dismissNotification(savedEventId) {
+  return request(`/notifications/${savedEventId}/dismiss`, { method: "POST" });
 }

@@ -11,7 +11,10 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    # Nullable because Google-authenticated users have no local password.
+    password_hash = db.Column(db.String(128), nullable=True)
+    google_id = db.Column(db.String(255), unique=True, nullable=True)
+    avatar_url = db.Column(db.String(500), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     collections = db.relationship(
@@ -20,11 +23,25 @@ class User(db.Model, UserMixin):
         cascade="all, delete-orphan",
         lazy=True,
     )
+    recent_events = db.relationship(
+        "RecentEvent",
+        backref="user",
+        cascade="all, delete-orphan",
+        lazy=True,
+    )
+    dismissed_notifications = db.relationship(
+        "DismissedNotification",
+        backref="user",
+        cascade="all, delete-orphan",
+        lazy=True,
+    )
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
 
     def check_password(self, password):
+        if not self.password_hash:
+            return False
         return bcrypt.check_password_hash(self.password_hash, password)
 
     def to_dict(self):
@@ -32,6 +49,8 @@ class User(db.Model, UserMixin):
             "id": self.id,
             "username": self.username,
             "email": self.email,
+            "avatar_url": self.avatar_url,
+            "auth_provider": "google" if self.google_id else "password",
             "created_at": self.created_at.isoformat(),
         }
 
@@ -101,3 +120,61 @@ class SavedEvent(db.Model):
             "image_url": self.image_url,
             "created_at": self.created_at.isoformat(),
         }
+
+
+class RecentEvent(db.Model):
+    """An event a user recently viewed (SeatGeek search result), for the
+    Profile > Recents tab. One row per (user, event); re-viewing an event
+    just bumps its viewed_at instead of duplicating rows.
+    """
+
+    __tablename__ = "recent_events"
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "seatgeek_event_id", name="uq_user_recent_event"),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    seatgeek_event_id = db.Column(db.String(50), nullable=False)
+    event_name = db.Column(db.String(200), nullable=False)
+    event_date = db.Column(db.String(50))
+    venue_name = db.Column(db.String(200))
+    venue_city = db.Column(db.String(100))
+    event_url = db.Column(db.String(500))
+    image_url = db.Column(db.String(500))
+    performer_name = db.Column(db.String(200))
+
+    viewed_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "seatgeek_event_id": self.seatgeek_event_id,
+            "event_name": self.event_name,
+            "event_date": self.event_date,
+            "venue_name": self.venue_name,
+            "venue_city": self.venue_city,
+            "event_url": self.event_url,
+            "image_url": self.image_url,
+            "performer_name": self.performer_name,
+            "viewed_at": self.viewed_at.isoformat(),
+        }
+
+
+class DismissedNotification(db.Model):
+    """Tracks which upcoming-event notifications a user has cleared, so
+    dismissed reminders don't keep reappearing. Notifications themselves are
+    computed on the fly from the user's saved events (see notifications
+    blueprint) rather than stored.
+    """
+
+    __tablename__ = "dismissed_notifications"
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "saved_event_id", name="uq_user_dismissed_event"),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    saved_event_id = db.Column(db.Integer, db.ForeignKey("saved_events.id"), nullable=False)
+    dismissed_at = db.Column(db.DateTime, default=datetime.utcnow)

@@ -1,5 +1,7 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask_login import login_user, logout_user, login_required, current_user
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token as google_id_token
 
 from ..extensions import db
 from ..models import User
@@ -45,6 +47,66 @@ def login():
     if not user or not user.check_password(password):
         return jsonify({"error": "invalid email or password"}), 401
 
+    login_user(user)
+    return jsonify(user.to_dict()), 200
+
+
+@auth_bp.route("/google", methods=["POST"])
+def google_login():
+    """Sign in (or sign up) using a Google Identity Services ID token.
+
+    The frontend renders Google's official Sign in with Google button,
+    which hands back a signed `credential` (an ID token) — we verify that
+    token's signature server-side rather than trusting anything the client
+    claims about who the user is.
+    """
+    data = request.get_json() or {}
+    token = data.get("credential")
+    if not token:
+        return jsonify({"error": "credential is required"}), 400
+
+    client_id = current_app.config.get("GOOGLE_CLIENT_ID")
+    if not client_id:
+        return jsonify({"error": "Google sign-in is not configured on this server"}), 500
+
+    try:
+        idinfo = google_id_token.verify_oauth2_token(
+            token, google_requests.Request(), client_id
+        )
+    except ValueError:
+        return jsonify({"error": "invalid Google credential"}), 401
+
+    google_id = idinfo["sub"]
+    email = (idinfo.get("email") or "").strip().lower()
+    if not email:
+        return jsonify({"error": "Google account has no email"}), 400
+    name = idinfo.get("name") or email.split("@")[0]
+    avatar_url = idinfo.get("picture")
+
+    user = User.query.filter_by(google_id=google_id).first()
+    if user is None:
+        # Link to an existing password account with the same email, if any.
+        user = User.query.filter_by(email=email).first()
+        if user is not None:
+            user.google_id = google_id
+            if avatar_url:
+                user.avatar_url = avatar_url
+        else:
+            base_username = "".join(ch for ch in name if ch.isalnum()).lower() or "user"
+            username = base_username
+            suffix = 1
+            while User.query.filter_by(username=username).first() is not None:
+                suffix += 1
+                username = f"{base_username}{suffix}"
+            user = User(
+                username=username,
+                email=email,
+                google_id=google_id,
+                avatar_url=avatar_url,
+            )
+            db.session.add(user)
+
+    db.session.commit()
     login_user(user)
     return jsonify(user.to_dict()), 200
 

@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { fetchEventDetails } from "../api/seatgeek";
 import { useFavorites } from "../context/FavoritesContext";
+import { useAuth } from "../context/AuthContext";
+import { recordRecent } from "../api/backend";
 import "./EventDetails.css";
 
 function EventDetails() {
   const { id } = useParams();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { isAuthenticated } = useAuth();
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,7 +22,7 @@ function EventDetails() {
       try {
         const data = await fetchEventDetails(id);
         setEvent(data);
-      } catch (err) {
+      } catch {
         setError("Couldn't load this event. It may no longer be available.");
       } finally {
         setLoading(false);
@@ -28,6 +31,23 @@ function EventDetails() {
 
     loadEvent();
   }, [id]);
+
+  // Log this as a "recently viewed" event for the signed-in user's
+  // Profile > Recents tab. Silently skipped if not logged in, and any
+  // failure here shouldn't block the page from rendering the event.
+  useEffect(() => {
+    if (!isAuthenticated || !event) return;
+    recordRecent({
+      seatgeek_event_id: String(event.id),
+      event_name: event.title,
+      event_date: event.datetime_local,
+      venue_name: event.venue?.name,
+      venue_city: event.venue?.city,
+      event_url: event.url,
+      image_url: event.performers?.[0]?.image,
+      performer_name: event.performers?.[0]?.name,
+    }).catch(() => {});
+  }, [isAuthenticated, event]);
 
   if (loading) return <p className="status-message">Loading event...</p>;
   if (error) return <p className="status-message error">{error}</p>;

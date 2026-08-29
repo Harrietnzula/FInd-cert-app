@@ -52,7 +52,7 @@ function Home() {
     try {
       const results = await fetchEvents(term);
       setEvents(results);
-    } catch (err) {
+    } catch {
       setError("Something went wrong fetching events. Please try again.");
     } finally {
       setLoading(false);
