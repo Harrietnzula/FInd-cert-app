@@ -59,6 +59,15 @@
   background: var(--bg-elevated);
 }
 
+.nearby-event-marker {
+  background: transparent;
+  border: 0;
+  font-size: 28px;
+  line-height: 36px;
+  text-align: center;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.65));
+}
+
 .nearby-events-list {
   list-style: none;
   display: flex;
@@ -91,4 +100,29 @@
   font-size: 13px;
   color: var(--text-secondary);
   white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .nearby-map-wrap {
+    height: 460px;
+  }
+
+  .nearby-range-select {
+    justify-content: space-between;
+  }
+
+  .nearby-range-select select {
+    flex: 1;
+    max-width: 220px;
+  }
+
+  .nearby-event-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nearby-event-meta {
+    white-space: normal;
+  }
 }

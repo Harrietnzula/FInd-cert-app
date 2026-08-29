@@ -2,45 +2,34 @@ import { useEffect } from "react";
 
 function playDing() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) return false;
+  if (!AudioContext) return;
   const context = new AudioContext();
-  if (context.state === "suspended") {
-    context.close();
-    return false;
-  }
   const oscillator = context.createOscillator();
   const gain = context.createGain();
+  const secondOscillator = context.createOscillator();
+  const secondGain = context.createGain();
   oscillator.type = "sine";
-  oscillator.frequency.setValueAtTime(659.25, context.currentTime);
-  oscillator.frequency.exponentialRampToValueAtTime(987.77, context.currentTime + 0.16);
+  secondOscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(783.99, context.currentTime);
+  secondOscillator.frequency.setValueAtTime(1046.5, context.currentTime + 0.08);
   gain.gain.setValueAtTime(0.0001, context.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.08, context.currentTime + 0.015);
-  gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.28);
+  secondGain.gain.setValueAtTime(0.0001, context.currentTime + 0.08);
+  gain.gain.exponentialRampToValueAtTime(0.06, context.currentTime + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.22);
+  secondGain.gain.exponentialRampToValueAtTime(0.045, context.currentTime + 0.095);
+  secondGain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.34);
   oscillator.connect(gain).connect(context.destination);
+  secondOscillator.connect(secondGain).connect(context.destination);
   oscillator.start();
-  oscillator.stop(context.currentTime + 0.3);
-  oscillator.addEventListener("ended", () => context.close());
-  return true;
+  secondOscillator.start(context.currentTime + 0.08);
+  oscillator.stop(context.currentTime + 0.24);
+  secondOscillator.stop(context.currentTime + 0.36);
+  secondOscillator.addEventListener("ended", () => context.close());
 }
 
 function AppOpenSound() {
   useEffect(() => {
-    let played = false;
-    const playOnce = () => {
-      if (played) return;
-      if (playDing()) {
-        played = true;
-        window.removeEventListener("pointerdown", playOnce);
-        window.removeEventListener("keydown", playOnce);
-      }
-    };
-    playOnce();
-    window.addEventListener("pointerdown", playOnce);
-    window.addEventListener("keydown", playOnce);
-    return () => {
-      window.removeEventListener("pointerdown", playOnce);
-      window.removeEventListener("keydown", playOnce);
-    };
+    playDing();
   }, []);
 
   return null;

@@ -58,7 +58,7 @@
   font-size: 15px;
   overflow: hidden;
   transform-style: preserve-3d;
-  animation: moon-phase-spin 4s ease-in-out infinite;
+  animation: moon-phase-idle 5s ease-in-out infinite;
 }
 
 .genre-icon::after {
@@ -71,6 +71,12 @@
   border-radius: 50%;
   background: rgba(10, 10, 10, 0.5);
   transform: rotate(18deg);
+}
+
+.genre-pill:hover .genre-icon,
+.genre-pill:focus-visible .genre-icon,
+.genre-pill-pressed .genre-icon {
+  animation: moon-phase-revolve 0.8s linear infinite;
 }
 
 @keyframes pill-pop-in {
@@ -90,9 +96,14 @@
   100% { transform: scale(1); }
 }
 
-@keyframes moon-phase-spin {
+@keyframes moon-phase-idle {
   0%, 100% { transform: perspective(120px) rotateY(-18deg); }
   50% { transform: perspective(120px) rotateY(18deg); }
+}
+
+@keyframes moon-phase-revolve {
+  from { transform: perspective(120px) rotateY(0deg); }
+  to { transform: perspective(120px) rotateY(360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {

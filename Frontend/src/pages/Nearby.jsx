@@ -17,11 +17,19 @@ const markerIcon = new L.Icon({
   popupAnchor: [1, -34],
 });
 
-function RecenterOnChange({ center }) {
+const eventMarkerIcon = L.divIcon({
+  className: "nearby-event-marker",
+  html: "<span aria-hidden=\"true\">&#128205;</span>",
+  iconSize: [30, 36],
+  iconAnchor: [15, 34],
+  popupAnchor: [0, -34],
+});
+
+function RecenterOnChange({ center, zoom }) {
   const map = useMap();
   useEffect(() => {
-    if (center) map.setView(center, map.getZoom());
-  }, [center, map]);
+    if (center) map.setView(center, zoom);
+  }, [center, map, zoom]);
   return null;
 }
 
@@ -32,6 +40,7 @@ function Nearby() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [range, setRange] = useState("25mi");
+  const mapZoom = range === "1000mi" ? 4 : range === "500mi" ? 6 : range === "250mi" ? 8 : 11;
 
   function requestLocation() {
     if (!navigator.geolocation) {
@@ -96,30 +105,30 @@ function Nearby() {
           <div className="nearby-range-select">
             <label htmlFor="range">Radius</label>
             <select id="range" value={range} onChange={(e) => setRange(e.target.value)}>
-              <option value="5mi">5 mi</option>
-              <option value="10mi">10 mi</option>
               <option value="25mi">25 mi</option>
-              <option value="50mi">50 mi</option>
               <option value="100mi">100 mi</option>
+              <option value="250mi">250 mi</option>
+              <option value="500mi">500 mi</option>
+              <option value="1000mi">1,000 mi</option>
             </select>
           </div>
 
           <div className="nearby-map-wrap">
-            <MapContainer center={mapCenter} zoom={11} scrollWheelZoom={false}>
+            <MapContainer center={mapCenter} zoom={mapZoom} scrollWheelZoom>
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <RecenterOnChange center={mapCenter} />
+              <RecenterOnChange center={mapCenter} zoom={mapZoom} />
               <Marker position={mapCenter} icon={markerIcon}>
                 <Popup>You are here</Popup>
               </Marker>
               {events.map((event) => {
                 const lat = event.venue?.location?.lat;
                 const lon = event.venue?.location?.lon;
-                if (!lat || !lon) return null;
+                if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
                 return (
-                  <Marker key={event.id} position={[lat, lon]} icon={markerIcon}>
+                  <Marker key={event.id} position={[lat, lon]} icon={eventMarkerIcon}>
                     <Popup>
                       <strong>{event.title}</strong>
                       <br />
