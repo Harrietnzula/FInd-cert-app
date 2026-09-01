@@ -17,15 +17,26 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Comma-separated list of allowed frontend origins, e.g.
-    # "http://localhost:3000,https://findcert.netlify.app"
-    CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:3000").split(",")
+    # Comma-separated list of allowed frontend origins. Default to the Vercel
+    # production domain while still allowing local development origins.
+    default_cors_origins = (
+        "https://f-ind-cert-app.vercel.app,"
+        "http://localhost:5173,"
+        "http://localhost:3000"
+    )
+    CORS_ORIGINS = [
+        origin.strip()
+        for origin in os.environ.get("CORS_ORIGINS", default_cors_origins).split(",")
+        if origin.strip()
+    ]
 
-    # Session cookie behavior. In local dev over http, keep these as-is.
-    # In production (frontend + backend on different domains, over https),
-    # set SESSION_COOKIE_SAMESITE=None and SESSION_COOKIE_SECURE=True.
-    SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "Lax")
-    SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE", "False") == "True"
+    # Production auth requires cookies to be allowed across subdomains.
+    # Vercel and Render are different origins, so the session cookie must be
+    # cross-site compatible. Local development usually remains Lax/False.
+    default_same_site = "None" if any("vercel.app" in origin for origin in CORS_ORIGINS) else "Lax"
+    SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", default_same_site)
+    default_secure = "True" if any("vercel.app" in origin for origin in CORS_ORIGINS) else "False"
+    SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE", default_secure) == "True"
 
     # OAuth client ID from https://console.cloud.google.com/apis/credentials
     # (Web application type). Used to verify the ID token the frontend gets

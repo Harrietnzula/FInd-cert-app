@@ -45,6 +45,7 @@ export function FavoritesProvider({ children }) {
       return full.id;
     } catch (err) {
       console.error("Failed to load favorites:", err);
+      throw err;
     } finally {
       setLoading(false);
     }
