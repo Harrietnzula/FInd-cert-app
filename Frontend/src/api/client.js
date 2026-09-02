@@ -1,8 +1,13 @@
-const API_URL = (
+const configuredApiUrl = (
   import.meta.env.VITE_API_BASE_URL ||
   import.meta.env.VITE_API_URL ||
   "https://find-cert-app-1.onrender.com"
 ).replace(/\/$/, "");
+const productionApiUrl = "https://find-cert-app-1.onrender.com";
+const isDeployedFrontend = typeof window !== "undefined" && window.location.hostname.endsWith("vercel.app");
+const API_URL = isDeployedFrontend && configuredApiUrl.includes("localhost")
+  ? productionApiUrl
+  : configuredApiUrl;
 
 /**
  * Wrapper around fetch for talking to the FindCert Flask API.
@@ -11,12 +16,26 @@ const API_URL = (
  * just try/catch instead of checking res.ok everywhere.
  */
 export async function apiRequest(path, { method = "GET", body } = {}) {
-  const res = await fetch(`${API_URL}${path}`, {
-    method,
-    credentials: "include",
-    headers: body ? { "Content-Type": "application/json" } : undefined,
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60000);
+
+  let res;
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      method,
+      credentials: "include",
+      headers: body ? { "Content-Type": "application/json" } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error("The server is waking up. Please try again in a moment.");
+    }
+    throw new Error("Unable to reach the server. Please check your connection and try again.");
+  } finally {
+    clearTimeout(timeout);
+  }
 
   let data = null;
   try {

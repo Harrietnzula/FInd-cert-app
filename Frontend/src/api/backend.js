@@ -1,15 +1,34 @@
-const BASE_URL = (
+const configuredBaseUrl = (
   import.meta.env.VITE_API_BASE_URL ||
   import.meta.env.VITE_API_URL ||
   "https://find-cert-app-1.onrender.com"
 ).replace(/\/$/, "");
+const productionBaseUrl = "https://find-cert-app-1.onrender.com";
+const isDeployedFrontend = typeof window !== "undefined" && window.location.hostname.endsWith("vercel.app");
+const BASE_URL = isDeployedFrontend && configuredBaseUrl.includes("localhost")
+  ? productionBaseUrl
+  : configuredBaseUrl;
 
 async function request(path, options = {}) {
-  const response = await fetch(`${BASE_URL}${path}`, {
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60000);
+
+  let response;
+  try {
+    response = await fetch(`${BASE_URL}${path}`, {
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      ...options,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error("The server is waking up. Please try logging in again in a moment.");
+    }
+    throw new Error("Unable to reach the login server. Please check your connection and try again.");
+  } finally {
+    clearTimeout(timeout);
+  }
 
   let data = null;
   try {
