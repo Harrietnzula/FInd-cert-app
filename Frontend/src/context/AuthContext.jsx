@@ -42,8 +42,13 @@ export function AuthProvider({ children }) {
   }
 
   async function logout() {
-    await api.logout();
-    setUser(null);
+    try {
+      await api.logout();
+    } catch (error) {
+      console.error("Logout request failed; clearing local session:", error);
+    } finally {
+      setUser(null);
+    }
   }
 
   return (

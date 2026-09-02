@@ -8,8 +8,11 @@ function Navbar() {
   const navigate = useNavigate();
 
   async function handleLogout() {
-    await logout();
-    navigate("/");
+    try {
+      await logout();
+    } finally {
+      navigate("/");
+    }
   }
 
   return (
@@ -45,7 +48,6 @@ function Navbar() {
       </Link>
       <div className="navbar-links">
         <Link to="/">Search</Link>
-        <Link to="/nearby">Nearby</Link>
         <Link to="/favorites">Favorites</Link>
         {isAuthenticated ? (
           <>

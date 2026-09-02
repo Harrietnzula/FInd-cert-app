@@ -33,30 +33,7 @@ export async function fetchFeaturedEvents() {
   return data.events;
 }
 
-/**
- * Get upcoming events near a lat/lon coordinate, sorted by distance.
- * range is a SeatGeek-style radius string, e.g. "25mi" or "40km".
- */
-export async function fetchNearbyEvents({ lat, lon, range = "25mi", perPage = 24 }) {
-  const params = new URLSearchParams({
-    lat: String(lat),
-    lon: String(lon),
-    range,
-    sort: "datetime_local.asc",
-    per_page: String(perPage),
-    client_id: CLIENT_ID,
-  });
-  const response = await fetch(`${BASE_URL}/events?${params}`);
-
-  if (!response.ok) {
-    throw new Error(`Error fetching nearby events: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  return data.events;
-}
-
-    // get event details by event ID and return the result
+// Get event details by event ID and return the result.
 export async function fetchEventDetails(eventId) {
   const url = `${BASE_URL}/events/${eventId}?client_id=${CLIENT_ID}`;
   const response = await fetch(url);
