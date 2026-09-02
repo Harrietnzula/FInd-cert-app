@@ -7,16 +7,18 @@ FindCert is a React and Flask application for discovering live events, saving fa
 - Frontend: https://f-ind-cert-app.vercel.app
 - Backend API: https://find-cert-app-1.onrender.com
 
+## Presentation
+
+- [FindCert project presentation](https://docs.google.com/presentation/d/1JIkerWfvdbGCxBeNZYZn4WKnNetb5xUk8O7LGCyTzmg/edit?usp=sharing)
+
 ## Features
 
 - SeatGeek event search and event details
-- Nearby events with browser location and a zoomable map
 - User signup and login with session-based authentication
 - Server-backed favorites and named collections
 - Recently viewed events and upcoming notifications
 - Profile picture URLs and collection avatars from saved event images
 - Responsive mobile layout and shared event imagery
-- One-time startup chime with an autoplay fallback
 
 ## Project Structure
 
