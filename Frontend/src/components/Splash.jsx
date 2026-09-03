@@ -19,6 +19,17 @@ function Splash({ onFinish }) {
     <div className={`splash ${fadingOut ? "splash-fade-out" : ""}`}>
       <div className="splash-spotlight splash-spotlight-left" aria-hidden="true" />
       <div className="splash-spotlight splash-spotlight-right" aria-hidden="true" />
+      <div className="splash-stage" aria-hidden="true">
+        <div className="splash-performer">
+          <span className="performer-head" />
+          <span className="performer-body" />
+          <span className="performer-arm performer-arm-left" />
+          <span className="performer-arm performer-arm-right" />
+          <span className="performer-leg performer-leg-left" />
+          <span className="performer-leg performer-leg-right" />
+        </div>
+        <div className="splash-mic-stand"><span /></div>
+      </div>
       <div className="splash-stars" aria-hidden="true">
         <span />
         <span />

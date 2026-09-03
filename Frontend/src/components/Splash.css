@@ -80,6 +80,121 @@
   animation: beam-pulse 2.2s ease-in-out infinite alternate;
 }
 
+.splash-stage {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: -4%;
+  width: 280px;
+  height: 280px;
+  transform: translateX(-50%);
+  opacity: 0.55;
+  filter: drop-shadow(0 -8px 22px rgba(255, 90, 60, 0.18));
+}
+
+.splash-stage::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 260px;
+  height: 34px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: #020202;
+  box-shadow: 0 -2px 20px rgba(255, 178, 107, 0.35);
+}
+
+.splash-performer {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  width: 76px;
+  height: 190px;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.8));
+}
+
+.performer-head,
+.performer-body,
+.performer-arm,
+.performer-leg {
+  position: absolute;
+  display: block;
+  background: #020202;
+}
+
+.performer-head {
+  top: 0;
+  left: 28px;
+  width: 24px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.performer-body {
+  top: 25px;
+  left: 19px;
+  width: 42px;
+  height: 82px;
+  border-radius: 46% 46% 20% 20%;
+  transform: skew(-4deg);
+}
+
+.performer-arm {
+  top: 35px;
+  width: 12px;
+  height: 84px;
+  border-radius: 999px;
+  transform-origin: top center;
+}
+
+.performer-arm-left { left: 15px; transform: rotate(18deg); }
+.performer-arm-right { right: 12px; transform: rotate(-30deg); }
+
+.performer-leg {
+  top: 98px;
+  width: 14px;
+  height: 88px;
+  border-radius: 999px;
+  transform-origin: top center;
+}
+
+.performer-leg-left { left: 22px; transform: rotate(7deg); }
+.performer-leg-right { right: 20px; transform: rotate(-9deg); }
+
+.splash-mic-stand {
+  position: absolute;
+  left: calc(50% + 42px);
+  bottom: 40px;
+  width: 2px;
+  height: 134px;
+  background: rgba(255, 178, 107, 0.65);
+  transform: rotate(8deg);
+  transform-origin: bottom center;
+}
+
+.splash-mic-stand::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -4px;
+  width: 10px;
+  height: 14px;
+  border-radius: 50%;
+  background: #050505;
+  border: 1px solid rgba(255, 178, 107, 0.65);
+}
+
+.splash-mic-stand span {
+  position: absolute;
+  bottom: 0;
+  left: -16px;
+  width: 34px;
+  height: 2px;
+  background: rgba(255, 178, 107, 0.65);
+}
+
 .splash-stars {
   position: absolute;
   inset: 0;
@@ -224,6 +339,7 @@
   .splash-wordmark,
   .splash-tagline,
   .splash-spotlight,
+  .splash-stage,
   .splash-stars span,
   .splash-icon-ring {
     animation: none;

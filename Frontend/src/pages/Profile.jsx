@@ -63,12 +63,13 @@ function Profile() {
     const name = newName.trim();
     if (!name) return;
     setCreating(true);
+    setCollectionError("");
     try {
       await createCollection(name);
       setNewName("");
       setShowCreate(false);
-    } catch {
-      // Keep the form open so the user can retry without retyping.
+    } catch (err) {
+      setCollectionError(err.message || "Could not create this collection. Please try again.");
     } finally {
       setCreating(false);
     }
