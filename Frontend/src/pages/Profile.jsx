@@ -117,8 +117,14 @@ function Profile() {
   function handleAvatarFileChange(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      setAvatarError("Please choose an image file.");
+    if (!file.type.startsWith("image/") && !/\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
+      setAvatarError("Please choose a JPEG or another image file.");
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setAvatarError("Please choose an image smaller than 8 MB.");
+      e.target.value = "";
       return;
     }
 
@@ -133,7 +139,13 @@ function Profile() {
         const canvas = document.createElement("canvas");
         canvas.width = Math.max(1, Math.round(image.width * scale));
         canvas.height = Math.max(1, Math.round(image.height * scale));
-        canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+        const context = canvas.getContext("2d");
+        if (!context) {
+          setAvatarError("Your browser could not prepare that image.");
+          setAvatarReading(false);
+          return;
+        }
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
         setAvatarUrl(canvas.toDataURL("image/jpeg", 0.82));
         setAvatarReading(false);
       };
@@ -193,7 +205,7 @@ function Profile() {
           <input
             id="avatar-file"
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/gif,image/webp"
             onChange={handleAvatarFileChange}
             disabled={avatarReading || avatarSaving}
           />

@@ -38,7 +38,7 @@ async function request(path, options = {}) {
   }
 
   if (!response.ok) {
-    const message = data?.error || response.statusText || "Request failed";
+    const message = data?.error || `Request failed (${response.status})`;
     throw new Error(message);
   }
 
