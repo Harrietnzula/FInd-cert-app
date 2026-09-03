@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchFeaturedEvents } from "../api/seatgeek";
+import { fetchCommunityMessages, sendCommunityMessage } from "../api/backend";
+import { useAuth } from "../context/AuthContext";
 import Footer from "../components/Footer";
 import "./Discover.css";
 
@@ -39,8 +41,21 @@ const CIRCLES = [
 ];
 
 function Discover() {
+  const { isAuthenticated, user } = useAuth();
   const [events, setEvents] = useState([]);
-  const [joinedCircles, setJoinedCircles] = useState([]);
+  const [joinedCircles, setJoinedCircles] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("findcert:joined-circles") || "[]");
+    } catch {
+      return [];
+    }
+  });
+  const [activeCircleId, setActiveCircleId] = useState(CIRCLES[0].id);
+  const [messages, setMessages] = useState([]);
+  const [messageBody, setMessageBody] = useState("");
+  const [messagesLoading, setMessagesLoading] = useState(false);
+  const [messageError, setMessageError] = useState("");
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     fetchFeaturedEvents()
@@ -49,12 +64,59 @@ function Discover() {
   }, []);
 
   function toggleCircle(circleId) {
-    setJoinedCircles((current) => (
-      current.includes(circleId)
+    setJoinedCircles((current) => {
+      const next = current.includes(circleId)
         ? current.filter((id) => id !== circleId)
-        : [...current, circleId]
-    ));
+        : [...current, circleId];
+      localStorage.setItem("findcert:joined-circles", JSON.stringify(next));
+      return next;
+    });
   }
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setMessages([]);
+      return undefined;
+    }
+    let cancelled = false;
+    async function loadMessages(showLoading = false) {
+      if (showLoading) setMessagesLoading(true);
+      try {
+        const data = await fetchCommunityMessages(activeCircleId);
+        if (!cancelled) setMessages(data.messages || []);
+      } catch (error) {
+        if (!cancelled) setMessageError(error.message);
+      } finally {
+        if (showLoading && !cancelled) setMessagesLoading(false);
+      }
+    }
+    setMessageError("");
+    loadMessages(true);
+    const interval = setInterval(() => loadMessages(), 10000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [activeCircleId, isAuthenticated]);
+
+  async function handleSendMessage(event) {
+    event.preventDefault();
+    const body = messageBody.trim();
+    if (!body || sending) return;
+    setSending(true);
+    setMessageError("");
+    try {
+      const message = await sendCommunityMessage(activeCircleId, body);
+      setMessages((current) => [...current, message]);
+      setMessageBody("");
+    } catch (error) {
+      setMessageError(error.message);
+    } finally {
+      setSending(false);
+    }
+  }
+
+  const activeCircle = CIRCLES.find((circle) => circle.id === activeCircleId);
 
   return (
     <div className="discover-page">
@@ -93,9 +155,62 @@ function Discover() {
                     {joined ? "Leave circle" : "Join circle"}
                   </button>
                 </div>
+                <button
+                  type="button"
+                  className="circle-chat-link"
+                  onClick={() => setActiveCircleId(circle.id)}
+                >
+                  {activeCircleId === circle.id ? "Viewing conversation" : "Open conversation"}
+                </button>
               </article>
             );
           })}
+        </div>
+      </section>
+
+      <section className="discover-chat" aria-labelledby="chat-heading">
+        <div className="discover-section-heading">
+          <div>
+            <p className="discover-eyebrow">Community room</p>
+            <h2 id="chat-heading">{activeCircle?.title}</h2>
+          </div>
+          <span className="discover-count">{activeCircle?.genre}</span>
+        </div>
+        <div className="chat-panel">
+          <div className="chat-messages" aria-live="polite">
+            {!isAuthenticated ? (
+              <p className="chat-empty">Log in to join the conversation.</p>
+            ) : messagesLoading ? (
+              <p className="chat-empty">Loading the room...</p>
+            ) : messages.length === 0 ? (
+              <p className="chat-empty">Be the first to share a concert thought here.</p>
+            ) : (
+              messages.map((message) => (
+                <article className={`chat-message ${message.author_id === user?.id ? "chat-message-own" : ""}`} key={message.id}>
+                  <div className="chat-message-meta">
+                    <strong>{message.author}</strong>
+                    <time dateTime={message.created_at}>{new Date(message.created_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</time>
+                  </div>
+                  <p>{message.body}</p>
+                </article>
+              ))
+            )}
+          </div>
+          {isAuthenticated && (
+            <form className="chat-form" onSubmit={handleSendMessage}>
+              <input
+                value={messageBody}
+                onChange={(event) => setMessageBody(event.target.value)}
+                maxLength={500}
+                placeholder={`Say something to ${activeCircle?.genre} listeners...`}
+                aria-label="Community message"
+              />
+              <button type="submit" disabled={sending || !messageBody.trim()}>
+                {sending ? "Sending..." : "Send"}
+              </button>
+            </form>
+          )}
+          {messageError && <p className="chat-error">{messageError}</p>}
         </div>
       </section>
 

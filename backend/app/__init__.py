@@ -26,12 +26,14 @@ def create_app(config_class=Config):
     from .saved_events.routes import saved_events_bp
     from .recents.routes import recents_bp
     from .notifications.routes import notifications_bp
+    from .community.routes import community_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(collections_bp)
     app.register_blueprint(saved_events_bp)
     app.register_blueprint(recents_bp)
     app.register_blueprint(notifications_bp)
+    app.register_blueprint(community_bp)
 
     @app.route("/")
     def index():

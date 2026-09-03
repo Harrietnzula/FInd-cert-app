@@ -109,6 +109,18 @@ export function deleteCollection(collectionId) {
   return request(`/collections/${collectionId}`, { method: "DELETE" });
 }
 
+// --- Community ---
+export function fetchCommunityMessages(roomId) {
+  return request(`/community/${encodeURIComponent(roomId)}/messages`);
+}
+
+export function sendCommunityMessage(roomId, body) {
+  return request(`/community/${encodeURIComponent(roomId)}/messages`, {
+    method: "POST",
+    body: JSON.stringify({ body }),
+  });
+}
+
 // --- Saved Events ---
 export function fetchSavedEvents(collectionId, { page = 1, perPage = 10 } = {}) {
   return request(

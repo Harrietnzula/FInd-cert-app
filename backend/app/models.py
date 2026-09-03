@@ -23,6 +23,12 @@ class User(db.Model, UserMixin):
         cascade="all, delete-orphan",
         lazy=True,
     )
+    community_messages = db.relationship(
+        "CommunityMessage",
+        backref="author",
+        cascade="all, delete-orphan",
+        lazy=True,
+    )
     recent_events = db.relationship(
         "RecentEvent",
         backref="user",
@@ -88,6 +94,26 @@ class Collection(db.Model):
         if include_events:
             data["saved_events"] = [e.to_dict() for e in self.saved_events]
         return data
+
+
+class CommunityMessage(db.Model):
+    __tablename__ = "community_messages"
+
+    id = db.Column(db.Integer, primary_key=True)
+    room_id = db.Column(db.String(80), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    body = db.Column(db.String(500), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "room_id": self.room_id,
+            "body": self.body,
+            "author": self.author.username,
+            "author_id": self.user_id,
+            "created_at": self.created_at.isoformat(),
+        }
 
 
 class SavedEvent(db.Model):
