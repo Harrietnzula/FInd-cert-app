@@ -108,7 +108,7 @@ function Profile() {
       window.dispatchEvent(new CustomEvent("findcert:user-updated", { detail: updated }));
       setEditingAvatar(false);
     } catch (err) {
-      setAvatarError(err.message);
+      setAvatarError(err.message || "Could not save your picture. Please try again.");
     } finally {
       setAvatarSaving(false);
     }

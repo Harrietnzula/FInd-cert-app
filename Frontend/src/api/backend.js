@@ -2,9 +2,9 @@ const configuredBaseUrl = (
   import.meta.env.VITE_API_BASE_URL ||
   import.meta.env.VITE_API_URL ||
   "https://find-cert-app-1.onrender.com"
-).replace(/\/$/, "");
+).replace(/\/+$/, "").replace(/\/api$/, "");
 const productionBaseUrl = "https://find-cert-app-1.onrender.com";
-const isDeployedFrontend = typeof window !== "undefined" && window.location.hostname.endsWith("vercel.app");
+const isDeployedFrontend = import.meta.env.PROD || (typeof window !== "undefined" && window.location.hostname.endsWith("vercel.app"));
 const BASE_URL = isDeployedFrontend && configuredBaseUrl.includes("localhost")
   ? productionBaseUrl
   : configuredBaseUrl;
