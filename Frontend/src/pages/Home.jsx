@@ -17,7 +17,7 @@ function Home() {
   const [error, setError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [heroImages, setHeroImages] = useState([]);
-  const [heroIndex, setHeroIndex] = useState(0);
+  const [searchBackgroundImage, setSearchBackgroundImage] = useState("");
   const [popularEvents, setPopularEvents] = useState([]);
   const [toastMessage, setToastMessage] = useState(null);
 
@@ -103,6 +103,7 @@ function Home() {
           .filter(Boolean);
 
         setHeroImages(images);
+        setSearchBackgroundImage(images[Math.floor(Math.random() * images.length)] || "");
         setPopularEvents(featuredEvents);
       } catch (err) {
         console.error("Couldn't load featured events:", err);
@@ -110,14 +111,6 @@ function Home() {
     }
     loadFeatured();
   }, []);
-
-  useEffect(() => {
-    if (heroImages.length === 0) return;
-    const interval = setInterval(() => {
-      setHeroIndex((prev) => (prev + 1) % heroImages.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [heroImages]);
 
   async function runSearch(term) {
     if (!term.trim()) return;
@@ -161,13 +154,6 @@ function Home() {
     <div className="home">
       <div className="hero">
         <div className="hero-bg">
-          {heroImages.map((img, index) => (
-            <div
-              key={img}
-              className={`hero-bg-image ${index === heroIndex ? "active" : ""}`}
-              style={{ backgroundImage: `url(${img})` }}
-            />
-          ))}
           <div className="hero-bg-overlay" />
           <SparkleField count={40} />
         </div>
@@ -198,7 +184,11 @@ function Home() {
 
           <button type="button" className="get-started-btn" onClick={handleGetStarted}>Get started</button>
 
-          <form onSubmit={handleSearch} className="search-form">
+          <form
+            onSubmit={handleSearch}
+            className="search-form"
+            style={searchBackgroundImage ? { backgroundImage: `url(${searchBackgroundImage})` } : undefined}
+          >
             <input
               ref={searchInputRef}
               type="text"

@@ -13,7 +13,6 @@ import Profile from "./pages/Profile";
 import Discover from "./pages/Discover";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import GlobalHeroBackground from "./components/GlobalHeroBackground";
 import "./App.css";
 
 function App() {
@@ -28,7 +27,6 @@ function App() {
       <FavoritesProvider>
         <CollectionsProvider>
           <BrowserRouter>
-            <GlobalHeroBackground />
             <Navbar />
             <main>
               <Routes>
