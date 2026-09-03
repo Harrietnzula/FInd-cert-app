@@ -148,6 +148,10 @@ export function searchUsers(query) {
   return request(`/explore/users?q=${encodeURIComponent(query)}`);
 }
 
+export function fetchUserProfile(userId) {
+  return request(`/explore/users/${userId}`);
+}
+
 export function fetchDirectMessages(userId) {
   return request(`/explore/messages/${userId}`);
 }

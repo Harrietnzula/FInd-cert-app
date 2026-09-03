@@ -80,6 +80,37 @@ def search_users():
     }), 200
 
 
+@explore_bp.route("/users/<int:user_id>", methods=["GET"])
+@login_required
+def get_user_profile(user_id):
+    user, error = _user_or_error(user_id)
+    if error:
+        return error
+    following = UserFollow.query.filter_by(follower_id=user.id).order_by(
+        UserFollow.created_at.desc()
+    ).all()
+    followers = UserFollow.query.filter_by(followed_id=user.id).order_by(
+        UserFollow.created_at.desc()
+    ).all()
+    return jsonify({
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "avatar_url": user.avatar_url,
+            "followers_count": len(followers),
+            "following_count": len(following),
+            "is_following": UserFollow.query.filter_by(
+                follower_id=current_user.id, followed_id=user.id
+            ).first() is not None,
+        },
+        "followers": [
+            {"id": follow.follower.id, "username": follow.follower.username, "avatar_url": follow.follower.avatar_url}
+            for follow in followers
+        ],
+        "following": [follow.to_dict() for follow in following],
+    }), 200
+
+
 def _user_or_error(user_id):
     user = db.session.get(User, user_id)
     if not user or user.id == current_user.id:

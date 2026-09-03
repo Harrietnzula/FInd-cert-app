@@ -1,0 +1,22 @@
+.messages-page { max-width: 760px; margin: 0 auto; padding-top: 20px; }
+.messages-heading { padding: 40px 0 30px; }
+.messages-heading h1 { font-size: 48px; margin-bottom: 12px; }
+.messages-heading p:last-child { max-width: 510px; color: var(--text-secondary); line-height: 1.55; }
+.messages-search { display: flex; gap: 10px; margin-bottom: 18px; }
+.messages-search input, .messages-form input { flex: 1; min-width: 0; padding: 13px 15px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-card); color: var(--text-primary); }
+.messages-search button, .messages-form button { padding: 0 18px; border-radius: var(--radius-sm); background: var(--accent); color: #16120f; font-weight: 800; }
+.messages-search button:disabled, .messages-form button:disabled { cursor: default; opacity: .45; }
+.messages-people { display: grid; gap: 5px; margin-bottom: 20px; }
+.messages-people button { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-card); text-align: left; }
+.messages-people button.active, .messages-people button:hover { border-color: var(--accent); }
+.messages-people img, .messages-people button::first-letter { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; }
+.messages-panel { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-card); }
+.messages-panel-heading { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border); }
+.messages-panel-heading a { color: var(--accent); font-size: 12px; }
+.messages-list { display: flex; flex-direction: column; gap: 10px; min-height: 220px; max-height: 400px; overflow-y: auto; padding: 16px; }
+.message-bubble { align-self: flex-start; max-width: 78%; padding: 9px 12px; border-radius: 4px 12px 12px 12px; background: var(--bg-elevated); }
+.message-bubble.own { align-self: flex-end; border-radius: 12px 4px 12px 12px; background: rgba(255,90,60,.16); }
+.message-bubble small { display: block; margin-bottom: 4px; color: var(--text-muted); font-size: 10px; }
+.message-bubble p { color: var(--text-secondary); font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+.messages-form { display: flex; gap: 10px; padding: 12px; border-top: 1px solid var(--border); }
+@media (max-width: 620px) { .messages-heading h1 { font-size: 38px; } .messages-search, .messages-form { flex-direction: column; } .messages-search button, .messages-form button { min-height: 44px; } }
