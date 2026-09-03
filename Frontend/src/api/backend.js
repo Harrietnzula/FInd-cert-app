@@ -159,6 +159,22 @@ export function sendDirectMessage(userId, body) {
   });
 }
 
+export function fetchFollowing() {
+  return request("/explore/following");
+}
+
+export function fetchFollowers() {
+  return request("/explore/followers");
+}
+
+export function followUser(userId) {
+  return request(`/explore/users/${userId}/follow`, { method: "POST" });
+}
+
+export function unfollowUser(userId) {
+  return request(`/explore/users/${userId}/follow`, { method: "DELETE" });
+}
+
 // --- Saved Events ---
 export function fetchSavedEvents(collectionId, { page = 1, perPage = 10 } = {}) {
   return request(

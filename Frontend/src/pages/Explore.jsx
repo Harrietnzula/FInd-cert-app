@@ -2,10 +2,14 @@ import { useEffect, useState } from "react";
 import { fetchEvents } from "../api/seatgeek";
 import {
   fetchDirectMessages,
+  fetchFollowers,
   fetchFollowedArtists,
+  fetchFollowing,
+  followUser,
   followArtist,
   searchUsers,
   sendDirectMessage,
+  unfollowUser,
   unfollowArtist,
 } from "../api/backend";
 import { useAuth } from "../context/AuthContext";
@@ -24,6 +28,8 @@ function Explore() {
   const [userQuery, setUserQuery] = useState("");
   const [userResults, setUserResults] = useState([]);
   const [userLoading, setUserLoading] = useState(false);
+  const [following, setFollowing] = useState([]);
+  const [followers, setFollowers] = useState([]);
   const [activeUser, setActiveUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [messageBody, setMessageBody] = useState("");
@@ -33,8 +39,12 @@ function Explore() {
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    fetchFollowedArtists()
-      .then((data) => setFollowedArtists(data.follows || []))
+    Promise.all([fetchFollowedArtists(), fetchFollowing(), fetchFollowers()])
+      .then(([artists, followingData, followersData]) => {
+        setFollowedArtists(artists.follows || []);
+        setFollowing(followingData.users || []);
+        setFollowers(followersData.users || []);
+      })
       .catch((error) => setFollowError(error.message));
   }, [isAuthenticated]);
 
@@ -93,6 +103,23 @@ function Explore() {
       setMessageError(error.message);
     } finally {
       setUserLoading(false);
+    }
+  }
+
+  async function handleUserFollow(person) {
+    const isFollowing = person.is_following ?? following.some((item) => item.user_id === person.id);
+    setMessageError("");
+    try {
+      if (isFollowing) {
+        await unfollowUser(person.id);
+        setFollowing((current) => current.filter((item) => item.user_id !== person.id));
+      } else {
+        await followUser(person.id);
+        setFollowing((current) => [...current, { user_id: person.id, username: person.username, avatar_url: person.avatar_url }]);
+      }
+      setUserResults((current) => current.map((item) => item.id === person.id ? { ...item, is_following: !isFollowing } : item));
+    } catch (error) {
+      setMessageError(error.message);
     }
   }
 
@@ -186,6 +213,7 @@ function Explore() {
             <p className="explore-eyebrow">Find listeners</p>
             <h2>Talk to someone who gets it</h2>
           </div>
+          {isAuthenticated && <span className="explore-muted">{followers.length} followers · {following.length} following</span>}
         </div>
         {!isAuthenticated ? (
           <p className="explore-empty">Log in to search for people and send direct messages.</p>
@@ -197,11 +225,17 @@ function Explore() {
             </form>
             <div className="user-results">
               {userResults.map((person) => (
-                <button type="button" className={`user-result ${activeUser?.id === person.id ? "active" : ""}`} key={person.id} onClick={() => setActiveUser(person)}>
+                <div className={`user-result ${activeUser?.id === person.id ? "active" : ""}`} key={person.id}>
                   <span className="user-avatar">{person.avatar_url ? <img src={person.avatar_url} alt="" /> : person.username.slice(0, 2).toUpperCase()}</span>
                   <span>{person.username}</span>
-                  <span className="user-result-action">Message</span>
-                </button>
+                  <span className="user-result-stats">{person.followers_count || 0} followers · {person.following_count || 0} following</span>
+                  <span className="user-result-action-wrap">
+                    <button type="button" className="user-result-action" onClick={() => setActiveUser(person)}>Message</button>
+                    <button type="button" className="user-follow-button" onClick={(event) => { event.stopPropagation(); handleUserFollow(person); }}>
+                      {(person.is_following ?? following.some((item) => item.user_id === person.id)) ? "Following" : "Follow"}
+                    </button>
+                  </span>
+                </div>
               ))}
             </div>
             {activeUser && (

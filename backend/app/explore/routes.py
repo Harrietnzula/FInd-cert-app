@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
 
 from ..extensions import db
-from ..models import ArtistFollow, DirectMessage, User
+from ..models import ArtistFollow, DirectMessage, User, UserFollow
 
 explore_bp = Blueprint("explore", __name__, url_prefix="/explore")
 
@@ -65,10 +65,85 @@ def search_users():
     ).order_by(User.username.asc()).limit(20).all()
     return jsonify({
         "users": [
-            {"id": user.id, "username": user.username, "avatar_url": user.avatar_url}
+            {
+                "id": user.id,
+                "username": user.username,
+                "avatar_url": user.avatar_url,
+                "followers_count": UserFollow.query.filter_by(followed_id=user.id).count(),
+                "following_count": UserFollow.query.filter_by(follower_id=user.id).count(),
+                "is_following": UserFollow.query.filter_by(
+                    follower_id=current_user.id, followed_id=user.id
+                ).first() is not None,
+            }
             for user in users
         ]
     }), 200
+
+
+def _user_or_error(user_id):
+    user = db.session.get(User, user_id)
+    if not user or user.id == current_user.id:
+        return None, (jsonify({"error": "user not found"}), 404)
+    return user, None
+
+
+@explore_bp.route("/following", methods=["GET"])
+@login_required
+def list_following():
+    follows = UserFollow.query.filter_by(follower_id=current_user.id).order_by(
+        UserFollow.created_at.desc()
+    ).all()
+    return jsonify({"users": [follow.to_dict() for follow in follows]}), 200
+
+
+@explore_bp.route("/followers", methods=["GET"])
+@login_required
+def list_followers():
+    follows = UserFollow.query.filter_by(followed_id=current_user.id).order_by(
+        UserFollow.created_at.desc()
+    ).all()
+    return jsonify({
+        "users": [
+            {
+                "id": follow.follower.id,
+                "username": follow.follower.username,
+                "avatar_url": follow.follower.avatar_url,
+                "created_at": follow.created_at.isoformat(),
+            }
+            for follow in follows
+        ]
+    }), 200
+
+
+@explore_bp.route("/users/<int:user_id>/follow", methods=["POST"])
+@login_required
+def follow_user(user_id):
+    user, error = _user_or_error(user_id)
+    if error:
+        return error
+    existing = UserFollow.query.filter_by(
+        follower_id=current_user.id, followed_id=user.id
+    ).first()
+    if not existing:
+        db.session.add(UserFollow(follower_id=current_user.id, followed_id=user.id))
+        db.session.commit()
+    return jsonify({"message": "user followed", "user_id": user.id}), 201
+
+
+@explore_bp.route("/users/<int:user_id>/follow", methods=["DELETE"])
+@login_required
+def unfollow_user(user_id):
+    user, error = _user_or_error(user_id)
+    if error:
+        return error
+    follow = UserFollow.query.filter_by(
+        follower_id=current_user.id, followed_id=user.id
+    ).first()
+    if not follow:
+        return jsonify({"error": "user follow not found"}), 404
+    db.session.delete(follow)
+    db.session.commit()
+    return jsonify({"message": "user unfollowed"}), 200
 
 
 def _conversation(user_id):

@@ -105,6 +105,10 @@ resource belongs to `current_user` before allowing read/update/delete.
 | POST   | /explore/follows              | Follow an artist account            |
 | DELETE | /explore/follows/:artist_id   | Unfollow an artist account          |
 | GET    | /explore/users?q=             | Search other users by username      |
+| GET    | /explore/following             | List users followed by current user |
+| GET    | /explore/followers             | List current user's followers       |
+| POST   | /explore/users/:user_id/follow | Follow another user                  |
+| DELETE | /explore/users/:user_id/follow | Unfollow another user                |
 | GET    | /explore/messages/:user_id    | List a direct-message conversation  |
 | POST   | /explore/messages/:user_id    | Send a direct message               |
 

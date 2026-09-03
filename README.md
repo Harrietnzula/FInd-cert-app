@@ -18,6 +18,7 @@ FindCert is a React and Flask application for discovering live events, saving fa
 - Server-backed favorites and named collections
 - Discover community with interest circles and persistent room conversations
 - Explore artist accounts, follow upcoming performers, search users, and send direct messages
+- Follow other FindCert users and see follower/following counts
 - Recently viewed events and upcoming notifications
 - Profile picture URLs and collection avatars from saved event images
 - Responsive mobile layout and shared event imagery

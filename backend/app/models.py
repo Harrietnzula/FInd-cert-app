@@ -49,6 +49,20 @@ class User(db.Model, UserMixin):
         cascade="all, delete-orphan",
         lazy=True,
     )
+    following = db.relationship(
+        "UserFollow",
+        foreign_keys="UserFollow.follower_id",
+        backref="follower",
+        cascade="all, delete-orphan",
+        lazy=True,
+    )
+    followers = db.relationship(
+        "UserFollow",
+        foreign_keys="UserFollow.followed_id",
+        backref="followed",
+        cascade="all, delete-orphan",
+        lazy=True,
+    )
     recent_events = db.relationship(
         "RecentEvent",
         backref="user",
@@ -155,6 +169,27 @@ class ArtistFollow(db.Model):
             "artist_id": self.artist_id,
             "artist_name": self.artist_name,
             "image_url": self.image_url,
+            "created_at": self.created_at.isoformat(),
+        }
+
+
+class UserFollow(db.Model):
+    __tablename__ = "user_follows"
+    __table_args__ = (
+        db.UniqueConstraint("follower_id", "followed_id", name="uq_user_follow"),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    follower_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    followed_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.followed_id,
+            "username": self.followed.username,
+            "avatar_url": self.followed.avatar_url,
             "created_at": self.created_at.isoformat(),
         }
 
