@@ -91,6 +91,17 @@
   border-color: var(--accent);
 }
 
+.profile-avatar-form input[type="file"] {
+  padding: 8px;
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+}
+
+.profile-avatar-help {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
 .profile-avatar-form button {
   padding: 0 16px;
   border-radius: var(--radius-sm);

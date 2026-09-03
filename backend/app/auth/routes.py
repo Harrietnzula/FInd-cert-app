@@ -131,10 +131,11 @@ def update_profile():
     data = request.get_json() or {}
     if "avatar_url" in data:
         avatar_url = (data.get("avatar_url") or "").strip()
-        if avatar_url and not avatar_url.startswith(("http://", "https://")):
-            return jsonify({"error": "profile picture must be a valid image URL"}), 400
-        if len(avatar_url) > 500:
-            return jsonify({"error": "profile picture URL is too long"}), 400
+        is_data_image = avatar_url.startswith("data:image/")
+        if avatar_url and not is_data_image and not avatar_url.startswith(("http://", "https://")):
+            return jsonify({"error": "profile picture must be a valid image URL or image file"}), 400
+        if len(avatar_url) > 500000:
+            return jsonify({"error": "profile picture is too large"}), 400
         current_user.avatar_url = avatar_url or None
 
     db.session.commit()

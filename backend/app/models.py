@@ -14,7 +14,7 @@ class User(db.Model, UserMixin):
     # Nullable because Google-authenticated users have no local password.
     password_hash = db.Column(db.String(128), nullable=True)
     google_id = db.Column(db.String(255), unique=True, nullable=True)
-    avatar_url = db.Column(db.String(500), nullable=True)
+    avatar_url = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     collections = db.relationship(

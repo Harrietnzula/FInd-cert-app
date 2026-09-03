@@ -35,6 +35,7 @@ function Profile() {
   const [editingAvatar, setEditingAvatar] = useState(false);
   const [avatarSaving, setAvatarSaving] = useState(false);
   const [avatarError, setAvatarError] = useState("");
+  const [avatarReading, setAvatarReading] = useState(false);
 
   useEffect(() => {
     setAvatarUrl(user?.avatar_url || "");
@@ -113,6 +114,42 @@ function Profile() {
     }
   }
 
+  function handleAvatarFileChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setAvatarError("Please choose an image file.");
+      return;
+    }
+
+    setAvatarReading(true);
+    setAvatarError("");
+    const reader = new FileReader();
+    reader.onload = () => {
+      const image = new Image();
+      image.onload = () => {
+        const size = 320;
+        const scale = Math.min(1, size / Math.max(image.width, image.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+        setAvatarUrl(canvas.toDataURL("image/jpeg", 0.82));
+        setAvatarReading(false);
+      };
+      image.onerror = () => {
+        setAvatarError("That image could not be read. Please choose another file.");
+        setAvatarReading(false);
+      };
+      image.src = reader.result;
+    };
+    reader.onerror = () => {
+      setAvatarError("That image could not be read. Please choose another file.");
+      setAvatarReading(false);
+    };
+    reader.readAsDataURL(file);
+  }
+
   if (!isAuthenticated) {
     return (
       <div className="profile-page">
@@ -152,6 +189,15 @@ function Profile() {
 
       {editingAvatar && (
         <form className="profile-avatar-form" onSubmit={handleAvatarSave}>
+          <label htmlFor="avatar-file">Choose a picture from your computer</label>
+          <input
+            id="avatar-file"
+            type="file"
+            accept="image/*"
+            onChange={handleAvatarFileChange}
+            disabled={avatarReading || avatarSaving}
+          />
+          {avatarReading && <p className="profile-avatar-help">Preparing your picture...</p>}
           <label htmlFor="avatar-url">Profile picture URL</label>
           <div className="profile-avatar-form-row">
             <input
@@ -161,7 +207,7 @@ function Profile() {
               value={avatarUrl}
               onChange={(e) => setAvatarUrl(e.target.value)}
             />
-            <button type="submit" disabled={avatarSaving}>
+            <button type="submit" disabled={avatarSaving || avatarReading || !avatarUrl.trim()}>
               {avatarSaving ? "Saving..." : "Save"}
             </button>
           </div>
