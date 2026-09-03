@@ -14,10 +14,11 @@ async function request(path, options = {}) {
   const timeout = setTimeout(() => controller.abort(), 60000);
 
   let response;
+  const isFormData = options.body instanceof FormData;
   try {
     response = await fetch(`${BASE_URL}${path}`, {
       credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      headers: isFormData ? undefined : { "Content-Type": "application/json" },
       ...options,
       signal: controller.signal,
     });
@@ -80,6 +81,12 @@ export function updateProfile(updates) {
     method: "PATCH",
     body: updates,
   });
+}
+
+export function uploadProfileAvatar(file) {
+  const body = new FormData();
+  body.append("image", file);
+  return request("/auth/profile/avatar", { method: "POST", body });
 }
 
 // --- Collections ---

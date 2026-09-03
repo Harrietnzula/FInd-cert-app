@@ -1,3 +1,5 @@
+import base64
+
 from flask import Blueprint, request, jsonify, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from google.auth.transport import requests as google_requests
@@ -138,5 +140,24 @@ def update_profile():
             return jsonify({"error": "profile picture is too large"}), 400
         current_user.avatar_url = avatar_url or None
 
+    db.session.commit()
+    return jsonify(current_user.to_dict()), 200
+
+
+@auth_bp.route("/profile/avatar", methods=["POST"])
+@login_required
+def upload_avatar():
+    image = request.files.get("image")
+    if image is None or not image.mimetype.startswith("image/"):
+        return jsonify({"error": "please choose an image file"}), 400
+
+    image_bytes = image.read()
+    if not image_bytes:
+        return jsonify({"error": "the selected image is empty"}), 400
+    if len(image_bytes) > 8 * 1024 * 1024:
+        return jsonify({"error": "profile picture must be smaller than 8 MB"}), 400
+
+    encoded = base64.b64encode(image_bytes).decode("ascii")
+    current_user.avatar_url = f"data:{image.mimetype};base64,{encoded}"
     db.session.commit()
     return jsonify(current_user.to_dict()), 200

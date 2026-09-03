@@ -36,6 +36,7 @@ function Profile() {
   const [avatarSaving, setAvatarSaving] = useState(false);
   const [avatarError, setAvatarError] = useState("");
   const [avatarReading, setAvatarReading] = useState(false);
+  const [avatarFile, setAvatarFile] = useState(null);
 
   useEffect(() => {
     setAvatarUrl(user?.avatar_url || "");
@@ -104,7 +105,9 @@ function Profile() {
     setAvatarSaving(true);
     setAvatarError("");
     try {
-      const updated = await api.updateProfile({ avatar_url: avatarUrl });
+      const updated = avatarFile
+        ? await api.uploadProfileAvatar(avatarFile)
+        : await api.updateProfile({ avatar_url: avatarUrl });
       window.dispatchEvent(new CustomEvent("findcert:user-updated", { detail: updated }));
       setEditingAvatar(false);
     } catch (err) {
@@ -147,6 +150,7 @@ function Profile() {
         }
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
         setAvatarUrl(canvas.toDataURL("image/jpeg", 0.82));
+        setAvatarFile(file);
         setAvatarReading(false);
       };
       image.onerror = () => {
