@@ -1,14 +1,14 @@
 """add community messages
 
 Revision ID: 7f8a2d1c4e6b
-Revises: 421ad849d4d0
+Revises: aa897d0ab0e2
 """
 from alembic import op
 import sqlalchemy as sa
 
 
 revision = "7f8a2d1c4e6b"
-down_revision = "421ad849d4d0"
+down_revision = "aa897d0ab0e2"
 branch_labels = None
 depends_on = None
 
