@@ -5,9 +5,9 @@ function Splash({ onFinish }) {
   const [fadingOut, setFadingOut] = useState(false);
 
   useEffect(() => {
-    const fadeTimer = setTimeout(() => setFadingOut(true), 900);
+    const fadeTimer = setTimeout(() => setFadingOut(true), 1600);
 
-    const removeTimer = setTimeout(() => onFinish(), 1250);
+    const removeTimer = setTimeout(() => onFinish(), 2200);
 
     return () => {
       clearTimeout(fadeTimer);
