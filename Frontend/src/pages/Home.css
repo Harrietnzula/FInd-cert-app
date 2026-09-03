@@ -47,11 +47,26 @@
   margin: 0 auto;
   padding: 56px 30px 40px;
   background: rgba(20, 16, 13, 0.48);
-  backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 28px;
   box-shadow: 0 28px 60px rgba(0, 0, 0, 0.24);
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-content::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgba(20, 16, 13, 0.48),
+    rgba(10, 8, 6, 0.82)
+  );
 }
 
 .home-brand {
@@ -124,28 +139,14 @@
 }
 
 .search-form {
-  position: relative;
-  overflow: hidden;
   display: flex;
   gap: 10px;
   max-width: 520px;
   margin: 28px auto 0;
-  padding: 8px;
-  background-size: cover;
-  background-position: center;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: var(--radius-md);
-}
-
-.search-form::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(10, 8, 6, 0.68);
+  padding: 0;
 }
 
 .search-form input {
-  position: relative;
   flex: 1;
   min-width: 0;
   background: rgba(10, 8, 6, 0.72);
@@ -167,7 +168,6 @@
 }
 
 .search-form button {
-  position: relative;
   background: var(--accent);
   color: #ffffff;
   font-weight: 700;

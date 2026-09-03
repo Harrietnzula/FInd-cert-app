@@ -167,7 +167,10 @@ function Home() {
           <SparkleField count={40} />
         </div>
 
-        <div className="hero-content">
+        <div
+          className="hero-content"
+          style={searchBackgroundImage ? { backgroundImage: `url(${searchBackgroundImage})` } : undefined}
+        >
           <div className="home-brand" aria-label="FindCert logo and name">
             <svg
               className="home-brand-icon"
@@ -193,11 +196,7 @@ function Home() {
 
           <button type="button" className="get-started-btn" onClick={handleGetStarted}>Get started</button>
 
-          <form
-            onSubmit={handleSearch}
-            className="search-form"
-            style={searchBackgroundImage ? { backgroundImage: `url(${searchBackgroundImage})` } : undefined}
-          >
+          <form onSubmit={handleSearch} className="search-form">
             <input
               ref={searchInputRef}
               type="text"
