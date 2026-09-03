@@ -39,14 +39,25 @@ function Explore() {
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    Promise.all([fetchFollowedArtists(), fetchFollowing(), fetchFollowers()])
-      .then(([artists, followingData, followersData]) => {
-        setFollowedArtists(artists.follows || []);
-        setFollowing(followingData.users || []);
-        setFollowers(followersData.users || []);
-      })
-      .catch((error) => setFollowError(error.message));
+    refreshRelationships().catch(() => {});
   }, [isAuthenticated]);
+
+  async function refreshRelationships() {
+    try {
+      const [artists, followingData, followersData] = await Promise.all([
+        fetchFollowedArtists(),
+        fetchFollowing(),
+        fetchFollowers(),
+      ]);
+      setFollowedArtists(artists.follows || []);
+      setFollowing(followingData.users || []);
+      setFollowers(followersData.users || []);
+      return followingData.users || [];
+    } catch (error) {
+      setFollowError(error.message);
+      throw error;
+    }
+  }
 
   async function handleArtistSearch(event) {
     event.preventDefault();
@@ -117,7 +128,12 @@ function Explore() {
         await followUser(person.id);
         setFollowing((current) => [...current, { user_id: person.id, username: person.username, avatar_url: person.avatar_url }]);
       }
-      setUserResults((current) => current.map((item) => item.id === person.id ? { ...item, is_following: !isFollowing } : item));
+      await refreshRelationships();
+      setUserResults((current) => current.map((item) => item.id === person.id ? {
+        ...item,
+        is_following: !isFollowing,
+        followers_count: Math.max(0, (item.followers_count || 0) + (isFollowing ? -1 : 1)),
+      } : item));
     } catch (error) {
       setMessageError(error.message);
     }
