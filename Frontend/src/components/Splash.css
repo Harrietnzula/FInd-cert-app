@@ -57,7 +57,7 @@
   filter: blur(26px);
   background: linear-gradient(to bottom, rgba(255, 126, 78, 0.5), transparent 64%);
   transform-origin: top center;
-  animation: spotlight-sway 5s ease-in-out infinite alternate;
+  animation: spotlight-sway 4s ease-in-out infinite alternate;
 }
 
 .splash-spotlight-left {
@@ -69,6 +69,15 @@
   right: 4%;
   transform: rotate(-28deg);
   animation-delay: -2.5s;
+}
+
+.splash-spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(255, 220, 160, 0.28), transparent 40%);
+  clip-path: polygon(42% 0, 58% 0, 88% 100%, 12% 100%);
+  animation: beam-pulse 2.2s ease-in-out infinite alternate;
 }
 
 .splash-stars {
@@ -169,6 +178,11 @@
 @keyframes spotlight-sway {
   from { opacity: 0.14; }
   to { opacity: 0.3; }
+}
+
+@keyframes beam-pulse {
+  from { opacity: 0.35; }
+  to { opacity: 0.9; }
 }
 
 @keyframes star-pulse {

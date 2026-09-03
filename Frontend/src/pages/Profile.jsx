@@ -26,6 +26,8 @@ function Profile() {
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState("");
   const [creating, setCreating] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+  const [collectionError, setCollectionError] = useState("");
 
   const [recents, setRecents] = useState([]);
   const [recentsLoading, setRecentsLoading] = useState(false);
@@ -74,8 +76,16 @@ function Profile() {
 
   async function handleDeleteCollection(id) {
     if (!window.confirm("Delete this collection and everything saved in it?")) return;
-    await deleteCollection(id);
-    if (selectedId === id) setSelectedId(null);
+    setDeletingId(id);
+    setCollectionError("");
+    try {
+      await deleteCollection(id);
+      if (selectedId === id) setSelectedId(null);
+    } catch (err) {
+      setCollectionError(err.message || "Could not delete this collection. Please try again.");
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   async function handleRemoveEvent(collectionId, event) {
@@ -112,6 +122,7 @@ function Profile() {
             Log in →
           </Link>
         </div>
+        {collectionError && <p className="auth-error">{collectionError}</p>}
       </div>
     );
   }
@@ -247,10 +258,11 @@ function Profile() {
                   <button
                     className="profile-collection-delete"
                     onClick={() => handleDeleteCollection(c.id)}
+                    disabled={deletingId === c.id}
                     aria-label={`Delete ${c.name}`}
                     title="Delete collection"
                   >
-                    ×
+                    {deletingId === c.id ? "…" : "×"}
                   </button>
                 </li>
               ))}
