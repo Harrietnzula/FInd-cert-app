@@ -5,11 +5,9 @@ function Splash({ onFinish }) {
   const [fadingOut, setFadingOut] = useState(false);
 
   useEffect(() => {
-    // Start fading out after the logo animation has had time to play
-    const fadeTimer = setTimeout(() => setFadingOut(true), 1600);
+    const fadeTimer = setTimeout(() => setFadingOut(true), 900);
 
-    // Actually remove the splash once the fade-out transition finishes
-    const removeTimer = setTimeout(() => onFinish(), 2200);
+    const removeTimer = setTimeout(() => onFinish(), 1250);
 
     return () => {
       clearTimeout(fadeTimer);
