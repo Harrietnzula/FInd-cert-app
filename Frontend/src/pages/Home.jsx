@@ -17,6 +17,7 @@ function Home() {
   const [error, setError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [heroImages, setHeroImages] = useState([]);
+  const [heroIndex, setHeroIndex] = useState(0);
   const [searchBackgroundImage, setSearchBackgroundImage] = useState("");
   const [popularEvents, setPopularEvents] = useState([]);
   const [toastMessage, setToastMessage] = useState(null);
@@ -103,6 +104,7 @@ function Home() {
           .filter(Boolean);
 
         setHeroImages(images);
+        setHeroIndex(Math.floor(Math.random() * images.length));
         setSearchBackgroundImage(images[Math.floor(Math.random() * images.length)] || "");
         setPopularEvents(featuredEvents);
       } catch (err) {
@@ -154,6 +156,13 @@ function Home() {
     <div className="home">
       <div className="hero">
         <div className="hero-bg">
+          {heroImages.map((img, index) => (
+            <div
+              key={img}
+              className={`hero-bg-image ${index === heroIndex ? "active" : ""}`}
+              style={{ backgroundImage: `url(${img})` }}
+            />
+          ))}
           <div className="hero-bg-overlay" />
           <SparkleField count={40} />
         </div>
