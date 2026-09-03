@@ -28,7 +28,9 @@ function Home() {
         const featured = await fetchFeaturedEvents();
         const filteredFeatured = (featured || []).filter((event) => {
           const name = `${event.title || ""} ${event.performers?.[0]?.name || ""}`.toLowerCase();
-          return !/(chris brown|usher)/i.test(name);
+          return ["concert", "festival"].includes(event.type) &&
+            event.performers?.[0]?.image &&
+            !/(chris brown|usher)/i.test(name);
         });
 
         const fallbackFeatured = [

@@ -133,7 +133,7 @@ The Render start script runs `flask --app run.py db upgrade` before Gunicorn. Se
 Endpoints used:
 - `GET /2/events?q={query}&client_id={id}` — search events by keyword
 - `GET /2/events/{id}?client_id={id}` — get details for a single event
-- `GET /2/events?sort=score.desc&per_page=10&client_id={id}` — fetch popular events for the homepage's hero background and "Popular right now" section
+- `GET /2/events?type=concert&sort=score.desc&per_page=30&client_id={id}` — fetch popular concerts for the homepage's hero background and "Popular right now" section
 
 Nearby results use SeatGeek's geolocation search and the browser's location permission. No separate Kenya provider is configured.
 

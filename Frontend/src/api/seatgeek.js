@@ -22,7 +22,13 @@ export async function fetchEvents(query) {
  * Get a handful of popular upcoming events, for hero background images
  */
 export async function fetchFeaturedEvents() {
-  const url = `${BASE_URL}/events?sort=score.desc&per_page=10&client_id=${CLIENT_ID}`;
+  const params = new URLSearchParams({
+    type: "concert",
+    sort: "score.desc",
+    per_page: "30",
+    client_id: CLIENT_ID,
+  });
+  const url = `${BASE_URL}/events?${params}`;
   const response = await fetch(url);
 
   if (!response.ok) {

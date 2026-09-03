@@ -9,6 +9,7 @@ function GlobalHeroBackground() {
     fetchFeaturedEvents()
       .then((events) => {
         const images = (events || [])
+          .filter((event) => ["concert", "festival"].includes(event.type))
           .map((event) => event.performers?.[0]?.image)
           .filter(Boolean);
         setImage(images[Math.floor(Math.random() * images.length)] || "");
