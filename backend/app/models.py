@@ -29,6 +29,26 @@ class User(db.Model, UserMixin):
         cascade="all, delete-orphan",
         lazy=True,
     )
+    sent_messages = db.relationship(
+        "DirectMessage",
+        foreign_keys="DirectMessage.sender_id",
+        backref="sender",
+        cascade="all, delete-orphan",
+        lazy=True,
+    )
+    received_messages = db.relationship(
+        "DirectMessage",
+        foreign_keys="DirectMessage.recipient_id",
+        backref="recipient",
+        cascade="all, delete-orphan",
+        lazy=True,
+    )
+    artist_follows = db.relationship(
+        "ArtistFollow",
+        backref="user",
+        cascade="all, delete-orphan",
+        lazy=True,
+    )
     recent_events = db.relationship(
         "RecentEvent",
         backref="user",
@@ -112,6 +132,50 @@ class CommunityMessage(db.Model):
             "body": self.body,
             "author": self.author.username,
             "author_id": self.user_id,
+            "created_at": self.created_at.isoformat(),
+        }
+
+
+class ArtistFollow(db.Model):
+    __tablename__ = "artist_follows"
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "artist_id", name="uq_user_artist_follow"),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    artist_id = db.Column(db.String(120), nullable=False)
+    artist_name = db.Column(db.String(200), nullable=False)
+    image_url = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "artist_id": self.artist_id,
+            "artist_name": self.artist_name,
+            "image_url": self.image_url,
+            "created_at": self.created_at.isoformat(),
+        }
+
+
+class DirectMessage(db.Model):
+    __tablename__ = "direct_messages"
+
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    recipient_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    body = db.Column(db.String(1000), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "sender_id": self.sender_id,
+            "recipient_id": self.recipient_id,
+            "body": self.body,
+            "sender": self.sender.username,
+            "recipient": self.recipient.username,
             "created_at": self.created_at.isoformat(),
         }
 

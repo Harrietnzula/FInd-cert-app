@@ -11,6 +11,7 @@ import EventDetails from "./pages/EventDetails";
 import Favorites from "./pages/Favorites";
 import Profile from "./pages/Profile";
 import Discover from "./pages/Discover";
+import Explore from "./pages/Explore";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import GlobalHeroBackground from "./components/GlobalHeroBackground";
@@ -37,6 +38,7 @@ function App() {
                 <Route path="/favorites" element={<PageTransition><Favorites /></PageTransition>} />
                 <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
                 <Route path="/discover" element={<PageTransition><Discover /></PageTransition>} />
+                <Route path="/explore" element={<PageTransition><Explore /></PageTransition>} />
                 <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
                 <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
               </Routes>

@@ -98,6 +98,16 @@ resource belongs to `current_user` before allowing read/update/delete.
 | GET    | /community/:room_id/messages  | List the latest room messages      |
 | POST   | /community/:room_id/messages  | Send an authenticated room message |
 
+### Explore
+| Method | Route                         | Description                         |
+|--------|-------------------------------|-------------------------------------|
+| GET    | /explore/follows              | List the current user's follows     |
+| POST   | /explore/follows              | Follow an artist account            |
+| DELETE | /explore/follows/:artist_id   | Unfollow an artist account          |
+| GET    | /explore/users?q=             | Search other users by username      |
+| GET    | /explore/messages/:user_id    | List a direct-message conversation  |
+| POST   | /explore/messages/:user_id    | Send a direct message               |
+
 ## Deploying (e.g. Render)
 - Set env vars: `SECRET_KEY`, `DATABASE_URL` (Render Postgres), `CORS_ORIGINS`
   (your deployed frontend URL), `SESSION_COOKIE_SAMESITE=None`,

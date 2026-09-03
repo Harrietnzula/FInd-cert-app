@@ -128,6 +128,37 @@ export function sendCommunityMessage(roomId, body) {
   });
 }
 
+// --- Explore ---
+export function fetchFollowedArtists() {
+  return request("/explore/follows");
+}
+
+export function followArtist(artist) {
+  return request("/explore/follows", {
+    method: "POST",
+    body: JSON.stringify(artist),
+  });
+}
+
+export function unfollowArtist(artistId) {
+  return request(`/explore/follows/${encodeURIComponent(artistId)}`, { method: "DELETE" });
+}
+
+export function searchUsers(query) {
+  return request(`/explore/users?q=${encodeURIComponent(query)}`);
+}
+
+export function fetchDirectMessages(userId) {
+  return request(`/explore/messages/${userId}`);
+}
+
+export function sendDirectMessage(userId, body) {
+  return request(`/explore/messages/${userId}`, {
+    method: "POST",
+    body: JSON.stringify({ body }),
+  });
+}
+
 // --- Saved Events ---
 export function fetchSavedEvents(collectionId, { page = 1, perPage = 10 } = {}) {
   return request(

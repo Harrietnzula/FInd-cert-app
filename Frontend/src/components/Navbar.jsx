@@ -48,6 +48,7 @@ function Navbar() {
       </Link>
       <div className="navbar-links">
         <Link to="/">Search</Link>
+        <Link to="/explore">Explore</Link>
         <Link to="/discover">Discover</Link>
         <Link to="/favorites">Favorites</Link>
         {isAuthenticated ? (

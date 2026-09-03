@@ -17,6 +17,7 @@ FindCert is a React and Flask application for discovering live events, saving fa
 - User signup and login with session-based authentication
 - Server-backed favorites and named collections
 - Discover community with interest circles and persistent room conversations
+- Explore artist accounts, follow upcoming performers, search users, and send direct messages
 - Recently viewed events and upcoming notifications
 - Profile picture URLs and collection avatars from saved event images
 - Responsive mobile layout and shared event imagery
@@ -27,6 +28,8 @@ FindCert is a React and Flask application for discovering live events, saving fa
 - `backend/` - Flask, PostgreSQL, and Flask-Migrate API deployed on Render
 
 Community messages are available to authenticated users in the Discover page. Messages are stored in PostgreSQL and grouped by concert-interest room.
+
+The Explore page searches upcoming SeatGeek performances, lets signed-in users follow artists, and provides persistent direct messages between FindCert users.
 
 ## Documentation
 
