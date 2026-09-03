@@ -1,6 +1,6 @@
 # FindCert
 
-FindCert is a React and Flask application for discovering live events, saving favorites, and organizing events into personal collections.
+FindCert is a React and Flask application for discovering live events, saving favorites, organizing personal collections, and meeting people with similar concert interests.
 
 ## Live Application
 
@@ -16,6 +16,7 @@ FindCert is a React and Flask application for discovering live events, saving fa
 - SeatGeek event search and event details
 - User signup and login with session-based authentication
 - Server-backed favorites and named collections
+- Discover community with interest circles and persistent room conversations
 - Recently viewed events and upcoming notifications
 - Profile picture URLs and collection avatars from saved event images
 - Responsive mobile layout and shared event imagery
@@ -24,6 +25,8 @@ FindCert is a React and Flask application for discovering live events, saving fa
 
 - `Frontend/` - React and Vite frontend deployed on Vercel
 - `backend/` - Flask, PostgreSQL, and Flask-Migrate API deployed on Render
+
+Community messages are available to authenticated users in the Discover page. Messages are stored in PostgreSQL and grouped by concert-interest room.
 
 ## Documentation
 
@@ -52,3 +55,7 @@ python run.py
 ```
 
 The frontend runs at `http://localhost:5173` and the backend runs at `http://localhost:5555`.
+
+### Deployment
+
+The frontend deploys from the `main` branch on Vercel. The backend runs on Render and applies database migrations during startup. Production authentication requires `CORS_ORIGINS` to include the Vercel frontend URL, with `SESSION_COOKIE_SAMESITE=None` and `SESSION_COOKIE_SECURE=True`.

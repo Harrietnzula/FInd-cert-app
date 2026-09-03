@@ -15,6 +15,7 @@
 - **SavedEvent** — belongs to a Collection; stores a snapshot of a SeatGeek event
 - **RecentEvent** — records events viewed by a User
 - **DismissedNotification** — records dismissed upcoming-event reminders
+- **CommunityMessage** — stores authenticated messages in interest-based community rooms
 
 ## Setup
 
@@ -91,9 +92,16 @@ resource belongs to `current_user` before allowing read/update/delete.
 | GET    | /notifications                 | List upcoming reminders        |
 | POST   | /notifications/:id/dismiss     | Dismiss an upcoming reminder   |
 
+### Community
+| Method | Route                         | Description                        |
+|--------|-------------------------------|------------------------------------|
+| GET    | /community/:room_id/messages  | List the latest room messages      |
+| POST   | /community/:room_id/messages  | Send an authenticated room message |
+
 ## Deploying (e.g. Render)
 - Set env vars: `SECRET_KEY`, `DATABASE_URL` (Render Postgres), `CORS_ORIGINS`
   (your deployed frontend URL), `SESSION_COOKIE_SAMESITE=None`,
   `SESSION_COOKIE_SECURE=True`.
 - Start command from the repository root: `sh backend/start.sh`
 - If the Render Root Directory is `backend`, use: `sh start.sh`
+- The startup script runs `flask --app run.py db upgrade` before Gunicorn so new schema migrations are applied.
