@@ -6,7 +6,7 @@ function Footer() {
     <footer className="footer">
       <div className="footer-top">
         <div className="footer-brand">
-          <span className="footer-logo">Find<span>Cert</span></span>
+          <span className="footer-logo">Riffs</span>
           <p>Discover live music, festivals, and shows — without the hassle.</p>
         </div>
 
