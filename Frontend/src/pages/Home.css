@@ -31,7 +31,7 @@
   width: 64px;
   height: 64px;
   display: block;
-  filter: drop-shadow(0 14px 28px rgba(255, 90, 60, 0.28));
+  filter: drop-shadow(0 14px 28px rgba(139, 92, 246, 0.28));
 }
 
 .home-brand-wordmark {
@@ -71,19 +71,19 @@
 
 .get-started-btn {
   margin-top: 22px;
-  background: linear-gradient(135deg, var(--accent), #ff8b67);
-  color: #16120f;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: #ffffff;
   padding: 14px 28px;
   border-radius: 999px;
   font-weight: 800;
   letter-spacing: 0.02em;
-  box-shadow: 0 12px 26px rgba(255, 90, 60, 0.35);
+  box-shadow: 0 12px 26px rgba(139, 92, 246, 0.35);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .get-started-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 30px rgba(255, 90, 60, 0.45);
+  box-shadow: 0 16px 30px rgba(139, 92, 246, 0.45);
 }
 
 .search-form {

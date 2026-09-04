@@ -17,7 +17,7 @@
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(circle at 50% 42%, rgba(255, 90, 60, 0.13), transparent 25%),
+    radial-gradient(circle at 50% 42%, rgba(139, 92, 246, 0.13), transparent 25%),
     linear-gradient(145deg, #090807 0%, #1b1310 52%, #090807 100%);
 }
 
@@ -92,8 +92,8 @@
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #ffb26b;
-  box-shadow: 0 0 12px 3px rgba(255, 178, 107, 0.6);
+  background: #60a5fa;
+  box-shadow: 0 0 12px 3px rgba(96, 165, 250, 0.6);
   animation: star-pulse 2.2s ease-in-out infinite;
 }
 
@@ -125,7 +125,7 @@
 
 .splash-icon-ring {
   position: absolute;
-  border: 1px solid rgba(255, 178, 107, 0.55);
+  border: 1px solid rgba(96, 165, 250, 0.55);
   border-radius: 50%;
   animation: ring-expand 2.4s ease-out infinite;
 }
@@ -139,7 +139,7 @@
   color: var(--accent);
   animation: splash-spin-in 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   will-change: transform, opacity;
-  filter: drop-shadow(0 0 16px rgba(255, 90, 60, 0.65));
+  filter: drop-shadow(0 0 16px rgba(139, 92, 246, 0.65));
 }
 
 .splash-wordmark {

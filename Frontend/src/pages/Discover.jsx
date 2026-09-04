@@ -12,7 +12,7 @@ const CIRCLES = [
     title: "The after-hours setlist",
     description: "For people who like hazy guitars, intimate rooms, and discovering the next big thing early.",
     members: "2.4k",
-    color: "coral",
+    color: "#8b5cf6",
   },
   {
     id: "hip-hop",

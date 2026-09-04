@@ -90,8 +90,8 @@
   filter: blur(18px);
 }
 
-.circle-card-coral .circle-card-glow { background: #ff5a3c; }
-.circle-card-gold .circle-card-glow { background: #ffb26b; }
+.circle-card-coral .circle-card-glow { background: #8b5cf6; }
+.circle-card-gold .circle-card-glow { background: #60a5fa; }
 .circle-card-blue .circle-card-glow { background: #50a7c2; }
 .circle-card-violet .circle-card-glow { background: #b77cff; }
 
@@ -221,7 +221,7 @@
 .chat-message-own {
   align-self: flex-end;
   border-radius: 12px 4px 12px 12px;
-  background: rgba(255, 90, 60, 0.16);
+  background: rgba(139, 92, 246, 0.16);
 }
 
 .chat-message-meta {
@@ -262,7 +262,7 @@
 }
 
 .chat-form button:disabled { cursor: default; opacity: 0.4; }
-.chat-error { padding: 0 14px 14px; color: #ff8b7a; font-size: 12px; }
+.chat-error { padding: 0 14px 14px; color: #93c5fd; font-size: 12px; }
 
 .discover-event {
   min-width: 0;

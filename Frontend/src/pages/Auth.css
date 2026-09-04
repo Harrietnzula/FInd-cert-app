@@ -68,9 +68,9 @@
 }
 
 .auth-error {
-  background: rgba(255, 90, 60, 0.12);
+  background: rgba(139, 92, 246, 0.12);
   color: var(--accent);
-  border: 1px solid rgba(255, 90, 60, 0.3);
+  border: 1px solid rgba(139, 92, 246, 0.3);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
   font-size: 14px;

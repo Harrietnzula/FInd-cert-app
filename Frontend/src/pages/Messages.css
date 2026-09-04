@@ -15,7 +15,7 @@
 .messages-panel-heading a { color: var(--accent); font-size: 12px; }
 .messages-list { display: flex; flex-direction: column; gap: 10px; min-height: 220px; max-height: 400px; overflow-y: auto; padding: 16px; }
 .message-bubble { align-self: flex-start; max-width: 78%; padding: 9px 12px; border-radius: 4px 12px 12px 12px; background: var(--bg-elevated); }
-.message-bubble.own { align-self: flex-end; border-radius: 12px 4px 12px 12px; background: rgba(255,90,60,.16); }
+.message-bubble.own { align-self: flex-end; border-radius: 12px 4px 12px 12px; background: rgba(139,92,246,.16); }
 .message-bubble small { display: block; margin-bottom: 4px; color: var(--text-muted); font-size: 10px; }
 .message-bubble p { color: var(--text-secondary); font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
 .messages-form { display: flex; gap: 10px; padding: 12px; border-top: 1px solid var(--border); }

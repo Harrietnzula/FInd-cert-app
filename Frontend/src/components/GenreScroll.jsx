@@ -2,17 +2,17 @@ import { useState } from "react";
 import "./GenreScroll.css";
 
 const GENRES = [
-  { name: "Rock", icon: "🎸", color: "#ff5a3c" },
-  { name: "Pop", icon: "🎤", color: "#ffd23f" },
+  { name: "Rock", icon: "🎸", color: "#8b5cf6" },
+  { name: "Pop", icon: "🎤", color: "#60a5fa" },
   { name: "Hip-Hop", icon: "🎧", color: "#7ee787" },
-  { name: "Country", icon: "🤠", color: "#ff9b71" },
+  { name: "Country", icon: "🤠", color: "#a78bfa" },
   { name: "Jazz", icon: "🎷", color: "#79c0ff" },
   { name: "Electronic", icon: "🎛️", color: "#d4a5ff" },
-  { name: "R&B", icon: "🎹", color: "#ff8fb1" },
-  { name: "Latin", icon: "💃", color: "#ffb347" },
+  { name: "R&B", icon: "🎹", color: "#818cf8" },
+  { name: "Latin", icon: "💃", color: "#38bdf8" },
   { name: "Indie", icon: "🎵", color: "#8fe3c7" },
   { name: "Classical", icon: "🎻", color: "#c9b8ff" },
-  { name: "Metal", icon: "🤘", color: "#ff6b6b" },
+  { name: "Metal", icon: "🤘", color: "#6366f1" },
   { name: "Folk", icon: "🪕", color: "#c8e07a" },
 ];
 

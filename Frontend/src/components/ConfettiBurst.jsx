@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./ConfettiBurst.css";
 
-const COLORS = ["#ff5a3c", "#ffd23f", "#7ee787", "#79c0ff", "#ff7a5c"];
+const COLORS = ["#8b5cf6", "#60a5fa", "#a78bfa", "#93c5fd", "#38bdf8"];
 
 function ConfettiBurst({ trigger }) {
   const [pieces, setPieces] = useState([]);

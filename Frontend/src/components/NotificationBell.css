@@ -13,7 +13,7 @@
 
 .notification-bell-btn:hover,
 .notification-bell-btn[aria-expanded="true"] {
-  background: rgba(255, 90, 60, 0.18);
+  background: rgba(139, 92, 246, 0.18);
   transform: rotate(-8deg) scale(1.06);
 }
 
