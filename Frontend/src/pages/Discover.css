@@ -37,7 +37,9 @@
 .discover-circles,
 .discover-events {
   padding: 34px 0 60px;
-  border-top: 1px solid var(--border);
+  border: 1px solid var(--border);
+  border-radius: 48px;
+  background: var(--bg-card);
 }
 
 .discover-section-heading {
@@ -183,7 +185,9 @@
 
 .discover-chat {
   padding: 34px 0 60px;
-  border-top: 1px solid var(--border);
+  border: 1px solid var(--border);
+  border-radius: 48px;
+  background: var(--bg-card);
 }
 
 .chat-panel {

@@ -15,11 +15,6 @@ function EventCard({ event, variant = "default", index = 0 }) {
   const [burstTrigger, setBurstTrigger] = useState(0);
   const [error, setError] = useState("");
 
-  const dateFormatted = new Date(event.datetime_local).toLocaleDateString(
-    "en-US",
-    { month: "short", day: "numeric" }
-  );
-
   const category = event.type?.replace(/_/g, " ") || "event";
   const image = event.performers?.[0]?.image;
 
@@ -92,7 +87,7 @@ function EventCard({ event, variant = "default", index = 0 }) {
       <div className="event-card-body">
         <p className="event-card-category">{category}</p>
         <h3>{event.title}</h3>
-        <p className="event-card-meta">{dateFormatted} · {event.venue?.city}</p>
+        <p className="event-card-meta">{event.venue?.city || "Live event"}</p>
       </div>
     </Link>
   );
