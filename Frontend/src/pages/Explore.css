@@ -13,7 +13,7 @@
 .explore-search input, .dm-form input { flex: 1; min-width: 0; padding: 13px 15px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-card); color: var(--text-primary); }
 .explore-search button, .dm-form button { padding: 0 20px; border-radius: var(--radius-sm); background: var(--accent); color: #16120f; font-weight: 800; }
 .explore-search button:disabled, .dm-form button:disabled { opacity: .45; cursor: default; }
-.explore-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.explore-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 240px)); gap: 16px; }
 .explore-result { min-width: 0; }
 .explore-result .event-card { height: calc(100% - 44px); }
 .explore-follow { width: 100%; min-height: 38px; margin-top: 6px; border: 1px solid var(--accent); border-radius: var(--radius-sm); color: var(--accent); font-size: 13px; font-weight: 700; }
