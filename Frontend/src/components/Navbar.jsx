@@ -44,7 +44,7 @@ function Navbar() {
           <circle cx="15" cy="14" r="1.3" fill="currentColor" />
           <circle cx="24" cy="12" r="1" fill="currentColor" />
         </svg>
-        Find<span>Cert</span>
+        Riffs
       </Link>
       <div className="navbar-links">
         <Link to="/">Search</Link>

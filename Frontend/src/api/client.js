@@ -10,7 +10,7 @@ const API_URL = isDeployedFrontend && configuredApiUrl.includes("localhost")
   : configuredApiUrl;
 
 /**
- * Wrapper around fetch for talking to the FindCert Flask API.
+ * Wrapper around fetch for talking to the Riffs Flask API.
  * Always sends cookies (credentials: "include") since auth is
  * session-based, and throws on non-2xx responses so callers can
  * just try/catch instead of checking res.ok everywhere.

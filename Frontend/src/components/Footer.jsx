@@ -30,7 +30,7 @@ function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <span>© {new Date().getFullYear()} FindCert</span>
+        <span>© {new Date().getFullYear()} Riffs</span>
         <div className="footer-socials">
           <a href="#" aria-label="Instagram">IG</a>
           <a href="#" aria-label="X">X</a>

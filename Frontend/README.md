@@ -1,11 +1,11 @@
-# FindCert 🪩
+# Riffs 🪩
 
 A React app for discovering live concerts, festivals, and shows — search by artist, venue, or team, browse a rotating showcase of popular events, and save the ones you're interested in to personal collections tied to your account.
 
 **Live site:** [f-ind-cert-app.vercel.app](https://f-ind-cert-app.vercel.app)
 **Backend API:** [find-cert-app-1.onrender.com](https://find-cert-app-1.onrender.com)
 
-The idea came from a common complaint I kept seeing on Twitter — people frustrated with Ticketmaster's long queues and cluttered ticket listings just to find something worth going to. FindCert is a faster, cleaner way to discover live events, so you can find what you want without the wait and without the clutter.
+The idea came from a common complaint I kept seeing on Twitter — people frustrated with Ticketmaster's long queues and cluttered ticket listings just to find something worth going to. Riffs is a faster, cleaner way to discover live events, so you can find what you want without the wait and without the clutter.
 
 Built as a multi-phase capstone project. The current version combines a React frontend with a Flask + PostgreSQL backend for authenticated, persistent event saving.
 

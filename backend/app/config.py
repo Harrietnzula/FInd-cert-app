@@ -10,7 +10,7 @@ class Config:
 
     # Render (and some other hosts) hand out "postgres://" URLs, but
     # SQLAlchemy 1.4+ requires "postgresql://". Normalize it here.
-    database_url = os.environ.get("DATABASE_URL", "postgresql://localhost/findcert")
+    database_url = os.environ.get("DATABASE_URL", "postgresql://localhost/riffs")
     if database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://", 1)
     SQLALCHEMY_DATABASE_URI = database_url

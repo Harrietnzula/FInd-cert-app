@@ -74,7 +74,7 @@ function Messages() {
   return (
     <div className="messages-page">
       <Link to="/explore" className="back-link">← Back to Explore</Link>
-      <div className="messages-heading"><p className="explore-eyebrow">Private conversations</p><h1>Messages</h1><p>Search for a FindCert user and start a conversation about the next show.</p></div>
+      <div className="messages-heading"><p className="explore-eyebrow">Private conversations</p><h1>Messages</h1><p>Search for a Riffs user and start a conversation about the next show.</p></div>
       <form className="messages-search" onSubmit={handleSearch}><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by username" aria-label="Search users" /><button type="submit" disabled={loading || query.trim().length < 2}>{loading ? "Searching..." : "Find people"}</button></form>
       {error && <p className="explore-error">{error}</p>}
       <div className="messages-people">{people.map((person) => <button type="button" className={activeUser?.id === person.id ? "active" : ""} key={person.id} onClick={() => setActiveUser(person)}>{person.avatar_url ? <img src={person.avatar_url} alt="" /> : person.username.slice(0, 2).toUpperCase()}<span>{person.username}</span></button>)}</div>

@@ -45,7 +45,7 @@ function Discover() {
   const [events, setEvents] = useState([]);
   const [joinedCircles, setJoinedCircles] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem("findcert:joined-circles") || "[]");
+      return JSON.parse(localStorage.getItem("riffs:joined-circles") || "[]");
     } catch {
       return [];
     }
@@ -68,7 +68,7 @@ function Discover() {
       const next = current.includes(circleId)
         ? current.filter((id) => id !== circleId)
         : [...current, circleId];
-      localStorage.setItem("findcert:joined-circles", JSON.stringify(next));
+      localStorage.setItem("riffs:joined-circles", JSON.stringify(next));
       return next;
     });
   }

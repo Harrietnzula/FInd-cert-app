@@ -4,69 +4,17 @@
 
 .hero {
   position: relative;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  background: #000000;
   padding: 100px 24px;
   margin-bottom: 56px;
 }
 
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.hero-bg-image {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0;
-  transition: opacity 1.2s ease;
-}
-
-.hero-bg-image.active {
-  opacity: 1;
-}
-
-.hero-bg-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(20, 15, 10, 0.55),
-    rgba(10, 8, 6, 0.85)
-  );
-}
-
 .hero-content {
-  position: relative;
-  z-index: 1;
+  background: #000000;
   text-align: center;
   max-width: 680px;
   margin: 0 auto;
   padding: 56px 30px 40px;
-  background: rgba(20, 16, 13, 0.48);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 28px;
-  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.24);
-  background-size: cover;
-  background-position: center;
-}
-
-.hero-content::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: linear-gradient(
-    145deg,
-    rgba(20, 16, 13, 0.48),
-    rgba(10, 8, 6, 0.82)
-  );
 }
 
 .home-brand {
@@ -222,12 +170,10 @@
   .hero {
     padding: 72px 16px;
     margin-bottom: 36px;
-    border-radius: var(--radius-md);
   }
 
   .hero-content {
     padding: 28px 18px;
-    border-radius: var(--radius-md);
   }
 
   .home-brand {

@@ -1,4 +1,4 @@
-# FindCert Backend (Flask + PostgreSQL)
+# Riffs Backend (Flask + PostgreSQL)
 
 ## Tech stack
 - Flask (app factory pattern, blueprints)
@@ -29,7 +29,7 @@
 
 2. Create a local Postgres database:
    ```bash
-   createdb findcert
+   createdb riffs
    ```
 
 3. Copy `.env.example` to `.env` and fill in real values:

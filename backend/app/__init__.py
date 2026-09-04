@@ -39,6 +39,6 @@ def create_app(config_class=Config):
 
     @app.route("/")
     def index():
-        return {"message": "FindCert API is running"}
+        return {"message": "Riffs API is running"}
 
     return app

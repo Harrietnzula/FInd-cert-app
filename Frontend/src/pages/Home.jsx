@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { fetchEvents, fetchFeaturedEvents } from "../api/seatgeek";
 import EventCard from "../components/EventCard";
-import SparkleField from "../components/SparkleField";
 import GenreScroll from "../components/GenreScroll";
 import PopularCarousel from "../components/PopularCarousel";
 import StoryBlock from "../components/StoryBlock";
@@ -16,9 +15,6 @@ function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
-  const [heroImages, setHeroImages] = useState([]);
-  const [heroIndex, setHeroIndex] = useState(0);
-  const [searchBackgroundImage, setSearchBackgroundImage] = useState("");
   const [popularEvents, setPopularEvents] = useState([]);
   const [toastMessage, setToastMessage] = useState(null);
 
@@ -101,13 +97,6 @@ function Home() {
         ];
 
         const featuredEvents = [...filteredFeatured, ...fallbackFeatured].slice(0, 8);
-        const images = featuredEvents
-          .map((event) => event.performers?.[0]?.image)
-          .filter(Boolean);
-
-        setHeroImages(images);
-        setHeroIndex(Math.floor(Math.random() * images.length));
-        setSearchBackgroundImage(images[Math.floor(Math.random() * images.length)] || "");
         setPopularEvents(featuredEvents);
       } catch (err) {
         console.error("Couldn't load featured events:", err);
@@ -157,23 +146,8 @@ function Home() {
   return (
     <div className="home">
       <div className="hero">
-        <div className="hero-bg">
-          {heroImages.map((img, index) => (
-            <div
-              key={img}
-              className={`hero-bg-image ${index === heroIndex ? "active" : ""}`}
-              style={{ backgroundImage: `url(${img})` }}
-            />
-          ))}
-          <div className="hero-bg-overlay" />
-          <SparkleField count={40} />
-        </div>
-
-        <div
-          className="hero-content"
-          style={searchBackgroundImage ? { backgroundImage: `url(${searchBackgroundImage})` } : undefined}
-        >
-          <div className="home-brand" aria-label="FindCert logo and name">
+        <div className="hero-content">
+          <div className="home-brand" aria-label="Riffs logo and name">
             <svg
               className="home-brand-icon"
               width="64"
@@ -190,7 +164,7 @@ function Home() {
               <circle cx="15" cy="14" r="1.3" fill="currentColor" />
               <circle cx="24" cy="12" r="1" fill="currentColor" />
             </svg>
-            <h1 className="home-brand-wordmark">Find<span>Cert</span></h1>
+            <h1 className="home-brand-wordmark">Riffs</h1>
           </div>
           <p className="hero-intro-copy">
             Discover the next unforgettable live show and get tickets before the crowd does.

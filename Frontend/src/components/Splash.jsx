@@ -49,7 +49,7 @@ function Splash({ onFinish }) {
           </svg>
         </div>
         <h1 className="splash-wordmark">
-          Find<span>Cert</span>
+          Riffs
         </h1>
         <p className="splash-tagline">Find your next live moment</p>
       </div>

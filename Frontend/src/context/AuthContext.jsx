@@ -19,8 +19,8 @@ export function AuthProvider({ children }) {
     function handleUserUpdated(event) {
       setUser(event.detail);
     }
-    window.addEventListener("findcert:user-updated", handleUserUpdated);
-    return () => window.removeEventListener("findcert:user-updated", handleUserUpdated);
+    window.addEventListener("riffs:user-updated", handleUserUpdated);
+    return () => window.removeEventListener("riffs:user-updated", handleUserUpdated);
   }, []);
 
   async function signup(credentials) {

@@ -108,7 +108,7 @@ function Profile() {
       const updated = avatarFile
         ? await api.uploadProfileAvatar(avatarFile)
         : await api.updateProfile({ avatar_url: avatarUrl });
-      window.dispatchEvent(new CustomEvent("findcert:user-updated", { detail: updated }));
+      window.dispatchEvent(new CustomEvent("riffs:user-updated", { detail: updated }));
       setEditingAvatar(false);
     } catch (err) {
       setAvatarError(err.message || "Could not save your picture. Please try again.");
